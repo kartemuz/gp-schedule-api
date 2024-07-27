@@ -1,3 +1,10 @@
+# Custom
+.idea
+.vscode
+*__pycache__
+poetry.lock
+logs
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
