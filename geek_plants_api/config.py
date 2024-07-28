@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     STATIC_DIR: Final = 'static'
 
     LOG_DIR: Final = 'logs'
-    LOG_FORMAT: Final = '{time} {level} {message}'
+    LOG_FORMAT: Final = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | " \
+                        "<level>{level: <8}</level> | " \
+                        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
     LOG_ROTATION: Final = '00:00'
     LOG_FILE_NAME: Final = '{time}.log'
 
