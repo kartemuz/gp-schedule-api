@@ -51,7 +51,7 @@ class TestUser:
     )
     def test_ex_opportunity(self, id, code, action, entity, excpectation):
         with excpectation:
-            obj = Opportunity(id=id, code=code, action=action, entity=entity)
+            obj = Opportunity(id=id, name=code, action=action, entity=entity)
 
     @pytest.mark.parametrize(
         'id, code, excpectation',
@@ -66,7 +66,7 @@ class TestUser:
         with excpectation:
             for act in actions:
                 for ent in entities:
-                    obj = Opportunity(id=id, code=code, action=act, entity=ent)
+                    obj = Opportunity(id=id, name=code, action=act, entity=ent)
 
     @pytest.mark.parametrize(
         'id, name, excpectation',
@@ -96,4 +96,4 @@ class TestUser:
             for r in roles:
                 for fn in full_names:
                     obj = User(id=id, role=r, login=login, email=email,
-                               password=password, full_name=fn)
+                               hashed_password=password, full_name=fn)

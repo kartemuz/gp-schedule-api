@@ -50,12 +50,12 @@ def entities():
 @pytest.fixture(scope='package', autouse=True)
 def opportunities(actions, entities):
     result = [
-        Opportunity(id=1, code='code1', action=actions[0], entity=entities[0]),
-        Opportunity(id=2, code='code2', action=actions[0], entity=entities[1]),
-        Opportunity(id=3, code='code3', action=actions[0], entity=entities[2]),
-        Opportunity(id=1, code='code4', action=actions[1], entity=entities[1]),
-        Opportunity(id=1, code='code5', action=actions[1], entity=entities[2]),
-        Opportunity(id=1, code='code6', action=actions[2], entity=entities[0]),
+        Opportunity(id=1, name='code1', action=actions[0], entity=entities[0]),
+        Opportunity(id=2, name='code2', action=actions[0], entity=entities[1]),
+        Opportunity(id=3, name='code3', action=actions[0], entity=entities[2]),
+        Opportunity(id=1, name='code4', action=actions[1], entity=entities[1]),
+        Opportunity(id=1, name='code5', action=actions[1], entity=entities[2]),
+        Opportunity(id=1, name='code6', action=actions[2], entity=entities[0]),
     ]
     return result
 
@@ -76,7 +76,7 @@ def users(full_names, roles):
             id=1,
             email='admin1@geek-plants.ru',
             login='admin1',
-            password='password1',
+            hashed_password='password1',
             role=roles[0],
             full_name=full_names[0]
         ),
@@ -85,7 +85,7 @@ def users(full_names, roles):
             id=2,
             email='user1@geek-plants.ru',
             login='user2',
-            password='password2',
+            hashed_password='password2',
             role=roles[1],
             full_name=full_names[2]
         )

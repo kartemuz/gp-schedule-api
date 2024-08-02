@@ -19,7 +19,7 @@ class Entity(BaseLoggable, BaseModel):
 
 class Opportunity(BaseLoggable, BaseModel):
     id: Optional[int] = None
-    code: str
+    name: str
     action: Action
     entity: Entity
 
@@ -35,7 +35,7 @@ class User(BaseLoggable, BaseModel):
     role: Role
     login: str
     email: str
-    password: str
+    hashed_password: str
     full_name: FullName
 
     def __init__(self, email: str, login: str, id: Optional[int] = None, *args, **kwargs) -> None:

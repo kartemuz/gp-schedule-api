@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     DEBUG_STATUS: Final = True
     TEST_STATUS: Final = True
+    ENV_PATH: Final = '.env' if TEST_STATUS == False else '.test.env'
 
     DB_NAME: str
     DB_HOST: str
@@ -32,7 +33,7 @@ class Settings(BaseSettings):
         return result
 
     model_config = SettingsConfigDict(
-        env_file='.env' if TEST_STATUS == False else '.test.env'
+        env_file=ENV_PATH
     )
 
 

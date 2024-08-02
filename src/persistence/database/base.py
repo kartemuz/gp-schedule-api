@@ -2,7 +2,6 @@ from src.config import settings
 from typing import Tuple, Annotated, Final
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, mapped_column
-from loguru import logger
 
 engine = create_async_engine(
     url=settings.db_url,
@@ -11,7 +10,8 @@ engine = create_async_engine(
 session_factory = async_sessionmaker(engine)
 int_PK = Annotated[int, mapped_column(primary_key=True, autoincrement=True)]
 
-STRING_LENGTH: Final = 30
+SHORT_STRING_LENGTH: Final = 30
+LONG_STRING_LENGTH: Final = 1000
 ONDELETE_CASCADE = 'CASCADE'
 RELATIONSHIP_CASCADE = 'all, delete-orphan'
 

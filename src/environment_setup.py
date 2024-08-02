@@ -4,14 +4,7 @@ import asyncio
 from loguru import logger
 from src.config import settings
 from src.persistence.database.base import engine, BaseDB
-from src.persistence.database.models.user import (
-    ActionDB,
-    EntityDB,
-    OpportunityDB,
-    RoleOpportunityDB,
-    RoleDB,
-    UserDB
-)
+from src.persistence.database.models import user_models, organization_models
 
 
 @logger.catch
