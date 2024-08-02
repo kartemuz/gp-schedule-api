@@ -1,17 +1,19 @@
 from src.config import settings
-from typing import Tuple, Annotated
+from typing import Tuple, Annotated, Final
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, mapped_column
+from loguru import logger
 
-# engine = create_async_engine(
-#     url=settings.db_url,
-#     echo=settings.DEBUG_STATUS
-# )
 engine = create_async_engine(
-    "mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4")
+    url=settings.db_url,
+    echo=settings.DEBUG_STATUS
+)
 session_factory = async_sessionmaker(engine)
 int_PK = Annotated[int, mapped_column(primary_key=True, autoincrement=True)]
-ID_ATTRIBUTE = 'id'
+
+STRING_LENGTH: Final = 30
+ONDELETE_CASCADE = 'CASCADE'
+RELATIONSHIP_CASCADE = 'all, delete-orphan'
 
 
 class BaseDB(DeclarativeBase):
@@ -29,4 +31,5 @@ class BaseDB(DeclarativeBase):
 
 
 def get_id_path(model_db: BaseDB) -> str:
-    return f'{model_db.__tablename__}.id'
+    ID_ATTRIBUTE: Final = 'id'
+    return f'{model_db.__tablename__}.{ID_ATTRIBUTE}'
