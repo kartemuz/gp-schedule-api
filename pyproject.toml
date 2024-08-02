@@ -10,8 +10,13 @@ python = "^3.10.13"
 loguru = "^0.7.2"
 fastapi = "^0.111.1"
 pydantic-settings = "^2.3.4"
-sqlalchemy = "^2.0.31"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
 pytest = "^8.3.2"
+email-validator = "^2.2.0"
+aiomysql = "^0.2.0"
+pytest-dotenv = "^0.5.2"
+pydantic = "^2.8.2"
+alembic = "^1.13.2"
 
 
 [build-system]

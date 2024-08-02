@@ -1,2 +1,5 @@
 start:
-	poetry run python geek_plants_api/main.py
+	poetry run python src/main.py
+setup_environment:
+	poetry run python src/environment_setup.py
+	
