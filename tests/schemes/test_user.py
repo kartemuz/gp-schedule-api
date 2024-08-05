@@ -1,7 +1,6 @@
 import pytest
 from src.core.schemes.user import Action, Entity, Opportunity, Role, User
-from src.core.schemes.full_name import FullName
-from pydantic import ValidationError
+from src.core.exceptions import ValidationError
 from src.core.exceptions import EmailNotValidError, ValidationError
 from contextlib import nullcontext as does_not_raise
 

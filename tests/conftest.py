@@ -1,16 +1,18 @@
 import pytest
 import inspect
+import asyncio
 from src.environment_setup import setup_environment
 from loguru import logger
 from src.config import settings
 from src.core.schemes.user import Action, Entity, Opportunity, Role, User
 from src.core.schemes.full_name import FullName
+from src.core.schemes.organization import SocialNetwork, Organization
 
 
 @pytest.fixture(scope='session', autouse=True)
-async def setup_env():
-    assert settings.TEST_STATUS == True
-    await setup_environment()
+def setup_env():
+    assert settings.TEST_STATUS is True
+    asyncio.get_event_loop().run_until_complete(setup_environment())
     logger.info(f'Launched {inspect.currentframe().f_code.co_name}')
     yield setup_env
     logger.info(f'Completed {inspect.currentframe().f_code.co_name}')
@@ -90,4 +92,21 @@ def users(full_names, roles):
             full_name=full_names[2]
         )
     ]
+    return result
+
+
+@pytest.fixture(scope='package', autouse=True)
+def social_networks():
+    result = [
+        SocialNetwork(name='tg1', value='link1'),
+        SocialNetwork(name='vk2', value='link2'),
+        SocialNetwork(name='vk3', value='link3'),
+    ]
+    return result
+
+
+@pytest.fixture(scope='package', autouse=True)
+def organization(social_networks):
+    result = Organization(address='address1', phone='1234546456',
+                          email='www@email.com', social_networks=social_networks)
     return result

@@ -6,13 +6,15 @@ class Settings(BaseSettings):
 
     DEBUG_STATUS: Final = True
     TEST_STATUS: Final = True
-    ENV_PATH: Final = '.env' if TEST_STATUS == False else '.test.env'
+    ENV_PATH: Final = '.env' if TEST_STATUS is False else '.test.env'
 
     DB_NAME: str
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
     DB_PASSWORD: str
+
+    ORGANIZATION_NAME: str
 
     STATIC_DIR: Final = 'static'
 

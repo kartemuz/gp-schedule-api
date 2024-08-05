@@ -6,7 +6,7 @@ api_router = APIRouter(
 )
 
 routers_list = (
-    organization_router,
+    organization_router
 )
 
 for r in routers_list:

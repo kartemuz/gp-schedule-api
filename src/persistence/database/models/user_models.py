@@ -1,12 +1,11 @@
 from typing import List
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.persistence.database.base import (
+from src.persistence.database import (
     BaseDB,
     int_PK,
     get_id_path,
     SHORT_STRING_LENGTH,
-    LONG_STRING_LENGTH,
     ONDELETE_CASCADE,
     RELATIONSHIP_CASCADE
 )
@@ -19,9 +18,9 @@ class ActionDB(BaseDB):
         String(SHORT_STRING_LENGTH), nullable=False, unique=True
     )
 
-    opportunities: Mapped[List['OpportunityDB']] = relationship(
-        cascade=RELATIONSHIP_CASCADE
-    )
+    # opportunities: Mapped[List['OpportunityDB']] = relationship(
+    #     cascade=RELATIONSHIP_CASCADE
+    # )
 
 
 class EntityDB(BaseDB):
@@ -31,9 +30,9 @@ class EntityDB(BaseDB):
         String(SHORT_STRING_LENGTH), nullable=False, unique=True
     )
 
-    opportunities: Mapped[List['OpportunityDB']] = relationship(
-        cascade=RELATIONSHIP_CASCADE
-    )
+    # opportunities: Mapped[List['OpportunityDB']] = relationship(
+    #     cascade=RELATIONSHIP_CASCADE
+    # )
 
 
 class OpportunityDB(BaseDB):
@@ -79,8 +78,8 @@ class RoleOpportunityDB(BaseDB):
         ForeignKey(get_id_path(OpportunityDB), ondelete=ONDELETE_CASCADE), nullable=False
     )
 
-    role: Mapped['RoleDB'] = relationship()
-    opportunity: Mapped['OpportunityDB'] = relationship()
+    # role: Mapped['RoleDB'] = relationship()
+    # opportunity: Mapped['OpportunityDB'] = relationship()
 
 
 class UserDB(BaseDB):

@@ -1,2 +1,3 @@
-if __name__ == '__main__':
-    pass
+from src.api import create_app
+
+app = create_app()
