@@ -4,6 +4,7 @@ from typing import Final
 
 
 STATUS_OK: Final = 'OK'
+STATUS_ERROR: Final = 'ERROR'
 NO_DETAILS = ''
 
 

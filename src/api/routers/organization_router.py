@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from src.core.schemes.organization import Organization, SocialNetwork
-from typing import List, Optional, Final
+from typing import Optional, Final
 from src.services import OrganizationService
 from src.persistence.repositories.organization_repositories import OrganizationRepository, SocialNetworkRepository
 from src.api.responses import organization_responses, BaseResponse, STATUS_OK, NO_DETAILS
-from src.api.exceptions import InternalStatusCodes
+from src.api.status_codes import InternalStatusCodes
 from loguru import logger
 
 
@@ -27,7 +27,8 @@ async def get_organization() -> organization_responses.OrganizationResponse:
         return organization_responses.OrganizationResponse(
             status=STATUS_OK, details=NO_DETAILS, data=data)
     except Exception:
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+        raise HTTPException(
+            status_code=InternalStatusCodes.BASE)
 
 
 @ organization_router.post('/edit')
@@ -36,7 +37,8 @@ async def edit_organization(obj: Organization) -> BaseResponse:
         await service.edit_organization(obj)
         return BaseResponse(status=STATUS_OK, details=NO_DETAILS)
     except Exception:
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+        raise HTTPException(
+            status_code=InternalStatusCodes.BASE)
 
 
 social_networks_router = APIRouter(
