@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "geek-plants-api"
+name = "gp-schedule-api"
 version = "0.1.0"
 description = "Web API"
 authors = ["kartemuz <kartemuz@gmail.com>"]
