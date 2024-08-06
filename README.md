@@ -6,7 +6,7 @@
 
 #### Development
 ```bash
-fastapi dev src/main.py
+fastapi dev --port 8213 src/main.py
 ```
 #### Testing
 ```bash
