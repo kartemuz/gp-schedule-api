@@ -3,20 +3,19 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.persistence.database import (
     BaseDB,
-    int_PK,
-    get_id_path,
     SHORT_STRING_LENGTH,
     ONDELETE_CASCADE,
-    RELATIONSHIP_CASCADE
+    LONG_STRING_LENGTH,
+    RELATIONSHIP_CASCADE,
+    str_PK,
+    int_PK,
 )
+from src.persistence.database.database_utils import BaseQueries, ModelPath
 
 
 class ActionDB(BaseDB):
     __tablename__ = 'action'
-    id: Mapped[int_PK]
-    name: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False, unique=True
-    )
+    name: Mapped[str_PK]
 
     # opportunities: Mapped[List['OpportunityDB']] = relationship(
     #     cascade=RELATIONSHIP_CASCADE
@@ -25,10 +24,7 @@ class ActionDB(BaseDB):
 
 class EntityDB(BaseDB):
     __tablename__ = 'entity'
-    id: Mapped[int_PK]
-    name: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False, unique=True
-    )
+    name: Mapped[str_PK]
 
     # opportunities: Mapped[List['OpportunityDB']] = relationship(
     #     cascade=RELATIONSHIP_CASCADE
@@ -37,66 +33,63 @@ class EntityDB(BaseDB):
 
 class OpportunityDB(BaseDB):
     __tablename__ = 'opportunity'
-    id: Mapped[int_PK]
-    name: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False, unique=True
+    name: Mapped[str_PK]
+    action_name: Mapped[str] = mapped_column(
+        ForeignKey(ModelPath.get_name_path(ActionDB), ondelete=ONDELETE_CASCADE), nullable=False
     )
-    action_id: Mapped[int] = mapped_column(
-        ForeignKey(get_id_path(ActionDB), ondelete=ONDELETE_CASCADE)
-    )
-    entity_id: Mapped[int] = mapped_column(
-        ForeignKey(get_id_path(EntityDB), ondelete=ONDELETE_CASCADE)
+    entity_name: Mapped[str] = mapped_column(
+        ForeignKey(ModelPath.get_name_path(EntityDB), ondelete=ONDELETE_CASCADE), nullable=False
     )
 
-    action: Mapped['ActionDB'] = relationship()
-    entity: Mapped['EntityDB'] = relationship()
+    action: Mapped['ActionDB'] = relationship(lazy='selectin')
+    entity: Mapped['EntityDB'] = relationship(lazy='selectin')
 
-    role_opportunities: Mapped[List['RoleOpportunityDB']] = relationship(
-        cascade=RELATIONSHIP_CASCADE
-    )
+    # role_opportunities: Mapped[List['RoleOpportunityDB']] = relationship(
+    #     cascade=RELATIONSHIP_CASCADE
+    # )
 
 
 class RoleDB(BaseDB):
     __tablename__ = 'role'
-    id: Mapped[int_PK]
-    name: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False, unique=True
-    )
+    name: Mapped[str_PK]
 
     role_opportunities: Mapped[List['RoleOpportunityDB']] = relationship(
-        cascade=RELATIONSHIP_CASCADE
+        cascade=RELATIONSHIP_CASCADE, lazy='selectin'
     )
 
 
 class RoleOpportunityDB(BaseDB):
     __tablename__ = 'role_opportunity'
     id: Mapped[int_PK]
-    role_id: Mapped[int] = mapped_column(
-        ForeignKey(get_id_path(RoleDB), ondelete=ONDELETE_CASCADE), nullable=False
+    role_name: Mapped[str] = mapped_column(
+        ForeignKey(ModelPath.get_name_path(RoleDB), ondelete=ONDELETE_CASCADE), nullable=False
     )
-    opportunity_id: Mapped[int] = mapped_column(
-        ForeignKey(get_id_path(OpportunityDB), ondelete=ONDELETE_CASCADE), nullable=False
+    opportunity_name: Mapped[str] = mapped_column(
+        ForeignKey(ModelPath.get_name_path(OpportunityDB), ondelete=ONDELETE_CASCADE), nullable=False
     )
 
     # role: Mapped['RoleDB'] = relationship()
-    # opportunity: Mapped['OpportunityDB'] = relationship()
+    opportunity: Mapped['OpportunityDB'] = relationship(lazy='selectin')
 
 
 class UserDB(BaseDB):
     __tablename__ = 'user'
-    id: Mapped[int_PK]
-    login: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False, unique=True)
+    login: Mapped[str_PK]
     email: Mapped[str] = mapped_column(
         String(SHORT_STRING_LENGTH), nullable=False, unique=True)
-    password: Mapped[str] = mapped_column(
-        String(SHORT_STRING_LENGTH), nullable=False
+    hashed_password: Mapped[str] = mapped_column(
+        String(LONG_STRING_LENGTH), nullable=False
     )
-    surname: Mapped[str] = mapped_column(String(SHORT_STRING_LENGTH))
-    name: Mapped[str] = mapped_column(String(SHORT_STRING_LENGTH))
-    patronymic: Mapped[str] = mapped_column(String(SHORT_STRING_LENGTH))
-    role_id: Mapped[int] = mapped_column(
-        ForeignKey(get_id_path(RoleDB), ondelete=ONDELETE_CASCADE), nullable=False
+    active: Mapped[bool] = mapped_column(nullable=False, default=True)
+    admin: Mapped[bool] = mapped_column(nullable=False, default=False)
+    surname: Mapped[str] = mapped_column(
+        String(SHORT_STRING_LENGTH), nullable=True)
+    name: Mapped[str] = mapped_column(
+        String(SHORT_STRING_LENGTH), nullable=True)
+    patronymic: Mapped[str] = mapped_column(
+        String(SHORT_STRING_LENGTH), nullable=True)
+    role_name: Mapped[str] = mapped_column(
+        ForeignKey(ModelPath.get_name_path(RoleDB), ondelete=ONDELETE_CASCADE), nullable=True
     )
 
-    role: Mapped['RoleDB'] = relationship()
+    role: Mapped['RoleDB'] = relationship(lazy='selectin')

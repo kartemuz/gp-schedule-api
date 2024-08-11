@@ -7,6 +7,7 @@ from src.config import settings
 from src.core.schemes.user import Action, Entity, Opportunity, Role, User
 from src.core.schemes.full_name import FullName
 from src.core.schemes.organization import SocialNetwork, Organization
+from src.application.auth import PasswordUtils
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -32,9 +33,9 @@ def full_names():
 @pytest.fixture(scope='package', autouse=True)
 def actions():
     result = [
-        Action(id=1, name='create'),
-        Action(id=2, name='delete'),
-        Action(id='3', name='add'),
+        Action(name='create'),
+        Action(name='delete'),
+        Action(name='add'),
     ]
     return result
 
@@ -42,9 +43,9 @@ def actions():
 @pytest.fixture(scope='package', autouse=True)
 def entities():
     result = [
-        Entity(id=1, name='user'),
-        Entity(id=2, name='group'),
-        Entity(id='3', name='teacher'),
+        Entity(name='user'),
+        Entity(name='group'),
+        Entity(name='teacher'),
     ]
     return result
 
@@ -52,12 +53,12 @@ def entities():
 @pytest.fixture(scope='package', autouse=True)
 def opportunities(actions, entities):
     result = [
-        Opportunity(id=1, name='code1', action=actions[0], entity=entities[0]),
-        Opportunity(id=2, name='code2', action=actions[0], entity=entities[1]),
-        Opportunity(id=3, name='code3', action=actions[0], entity=entities[2]),
-        Opportunity(id=1, name='code4', action=actions[1], entity=entities[1]),
-        Opportunity(id=1, name='code5', action=actions[1], entity=entities[2]),
-        Opportunity(id=1, name='code6', action=actions[2], entity=entities[0]),
+        Opportunity(name='code1', action=actions[0], entity=entities[0]),
+        Opportunity(name='code2', action=actions[0], entity=entities[1]),
+        Opportunity(name='code3', action=actions[0], entity=entities[2]),
+        Opportunity(name='code4', action=actions[1], entity=entities[1]),
+        Opportunity(name='code5', action=actions[1], entity=entities[2]),
+        Opportunity(name='code6', action=actions[2], entity=entities[0]),
     ]
     return result
 
@@ -65,7 +66,7 @@ def opportunities(actions, entities):
 @pytest.fixture(scope='package', autouse=True)
 def roles(opportunities):
     result = [
-        Role(id=1, name='Admin', opportunities=opportunities),
+        Role(name='Admin', opportunities=opportunities),
         Role(name='User', opportunities=[opportunities[0], opportunities[1]])
     ]
     return result
@@ -75,21 +76,23 @@ def roles(opportunities):
 def users(full_names, roles):
     result = [
         User(
-            id=1,
             email='admin1@geek-plants.ru',
             login='admin1',
-            hashed_password='password1',
+            active=True,
+            hashed_password=PasswordUtils.hash_password('password1'),
             role=roles[0],
-            full_name=full_names[0]
+            full_name=full_names[0],
+            admin=False
         ),
 
         User(
-            id=2,
             email='user1@geek-plants.ru',
             login='user2',
-            hashed_password='password2',
+            active=True,
+            hashed_password=PasswordUtils.hash_password('password2'),
             role=roles[1],
-            full_name=full_names[2]
+            full_name=full_names[2],
+            admin=False
         )
     ]
     return result

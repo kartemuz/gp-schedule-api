@@ -1,8 +1,9 @@
 from src.core.stores.organization_stores import SocialNetworkStore
 from src.core.schemes.organization import SocialNetwork
-from typing import List, Optional
+from typing import List
 from src.persistence.database.models.organization_models import SocialNetworkDB
-from src.persistence.database import session_factory, BaseSelect
+from src.persistence.database import session_factory
+from src.persistence.database.database_utils import BaseQueries
 from src.persistence.exceptions import IntegrityError
 
 
@@ -22,11 +23,11 @@ class SocialNetworkRepository(SocialNetworkStore):
 
             except IntegrityError as ex:
                 await session.rollback()
-                raise ex
+                # raise ex
 
-    async def get(self, name: str) -> Optional[scheme]:
-        result: Optional[self.scheme]
-        social_network_db: self.model = await BaseSelect.select_by_name(model=self.model, name=name)
+    async def get(self, name: str) -> scheme:
+        result: self.scheme
+        social_network_db: self.model = await BaseQueries.select_by_name(model=self.model, name=name)
         result = self.scheme(
             name=social_network_db.name,
             value=social_network_db.value
@@ -38,10 +39,10 @@ class SocialNetworkRepository(SocialNetworkStore):
         await self.add(obj)
 
     async def delete(self, name: str) -> None:
-        await BaseSelect.delete_by_name(model=self.model, name=name)
+        await BaseQueries.delete_by_name(model=self.model, name=name)
 
     async def get_all(self) -> List[scheme]:
-        social_networks_db = await BaseSelect.select_all(self.model)
+        social_networks_db = await BaseQueries.select_all(self.model)
         result = []
         for s_n_db in social_networks_db:
             result.append(

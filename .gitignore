@@ -5,6 +5,7 @@
 poetry.lock
 logs
 .test.env
+certs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

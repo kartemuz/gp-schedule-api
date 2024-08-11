@@ -1,94 +1,119 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status, Depends
 from src.core.schemes.organization import Organization, SocialNetwork
-from typing import Optional, Final
-from src.services import OrganizationService
-from src.persistence.repositories.organization_repositories import OrganizationRepository, SocialNetworkRepository
-from src.api.responses import organization_responses, BaseResponse, STATUS_OK, NO_DETAILS
-from src.api.status_codes import InternalStatusCodes
+from typing import Optional, Final, List
+from src.presentation.controllers import OrganizationController
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from loguru import logger
+from src.application.auth.auth_utils import JWTUtils
 
 
-TAG: Final = 'organization'
+OGRANIZATION_TAG: Final = 'organization'
 
 organization_router = APIRouter(
     prefix="/organization",
-    tags=[TAG]
+    tags=[OGRANIZATION_TAG]
 )
-service = OrganizationService(
-    social_network_repository=SocialNetworkRepository,
-    organization_reposotory=OrganizationRepository
-)
+
+http_bearer = HTTPBearer()
+organization_controller = OrganizationController()
 
 
 @organization_router.get('/get')
-async def get_organization() -> organization_responses.OrganizationResponse:
+async def get_organization() -> Organization:
+
     try:
-        data = await service.get_organization()
-        return organization_responses.OrganizationResponse(
-            status=STATUS_OK, details=NO_DETAILS, data=data)
+        result: Organization = await organization_controller.get_organization()
+        return result
     except Exception:
         raise HTTPException(
-            status_code=InternalStatusCodes.BASE)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @ organization_router.post('/edit')
-async def edit_organization(obj: Organization) -> BaseResponse:
+async def edit_organization(obj: Organization, cred: HTTPAuthorizationCredentials = Depends(http_bearer)) -> None:
     try:
-        await service.edit_organization(obj)
-        return BaseResponse(status=STATUS_OK, details=NO_DETAILS)
+        JWTUtils.decode_jwt(token=cred.credentials)
     except Exception:
         raise HTTPException(
-            status_code=InternalStatusCodes.BASE)
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    try:
+        await organization_controller.edit_organization(obj)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 social_networks_router = APIRouter(
     prefix="/social_networks",
-    tags=[TAG]
+    tags=[OGRANIZATION_TAG]
 )
 
 
 @ social_networks_router.get('/get')
-async def get_social_networks(name: Optional[str] = None) -> organization_responses.SocialNetworkResponse | organization_responses.SocialNetworksListResponse:
+async def get_social_networks(name: Optional[str] = None) -> SocialNetwork | List[SocialNetwork]:
     try:
-        result: organization_responses.SocialNetworkResponse | organization_responses.SocialNetworkResponse
+        result: SocialNetwork | List[SocialNetwork]
         if name is None:
-            data = await service.get_all_social_networks()
-            result = organization_responses.SocialNetworksListResponse(
-                status=STATUS_OK, data=data, details=NO_DETAILS)
+            result = await organization_controller.get_all_social_networks()
         else:
-            data = await service.get_social_network(name=name)
-            result = organization_responses.SocialNetworkResponse(
-                status=STATUS_OK, data=data, details=NO_DETAILS)
+            result = await organization_controller.get_social_network(name=name)
         return result
-    except Exception as ex:
-        logger.error(ex)
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @ social_networks_router.post('/add')
-async def add_social_network(obj: SocialNetwork) -> BaseResponse:
+async def add_social_network(obj: SocialNetwork, cred: HTTPAuthorizationCredentials = Depends(http_bearer)) -> None:
     try:
-        await service.add_social_network(obj)
-        return BaseResponse(status=STATUS_OK, details=NO_DETAILS)
+        JWTUtils.decode_jwt(token=cred.credentials)
     except Exception:
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    try:
+        await organization_controller.add_social_network(obj)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @ social_networks_router.get('/delete')
-async def delete_social_network(name: str) -> BaseResponse:
+async def delete_social_network(name: str, cred: HTTPAuthorizationCredentials = Depends(http_bearer)) -> None:
     try:
-        await service.delete_social_network(name=name)
-        return BaseResponse(status=STATUS_OK, details=NO_DETAILS)
+        JWTUtils.decode_jwt(token=cred.credentials)
     except Exception:
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    try:
+        await organization_controller.delete_social_network(name=name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @ social_networks_router.post('/edit')
-async def edit_social_network(obj: SocialNetwork) -> BaseResponse:
+async def edit_social_network(obj: SocialNetwork, cred: HTTPAuthorizationCredentials = Depends(http_bearer)) -> None:
     try:
-        await service.edit_social_network(obj)
-        return BaseResponse(status=STATUS_OK, details=NO_DETAILS)
+        JWTUtils.decode_jwt(token=cred.credentials)
     except Exception:
-        raise HTTPException(status_code=InternalStatusCodes.BASE)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    try:
+        await organization_controller.edit_social_network(obj)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 organization_router.include_router(social_networks_router)

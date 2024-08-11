@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 from src.core.schemes.organization import SocialNetwork
-from typing import Optional, List
+from typing import List
 
 
 class SocialNetworkStore(ABC):
@@ -11,7 +11,7 @@ class SocialNetworkStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Optional[scheme]:
+    async def get(self, name: str) -> scheme:
         pass
 
     @abstractmethod

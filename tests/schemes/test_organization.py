@@ -1,7 +1,6 @@
 import pytest
 from src.core.schemes.organization import SocialNetwork, Organization
-from pydantic import ValidationError
-from src.core.exceptions import EmailNotValidError, ValidationError
+from src.core.exceptions import ValidationError
 from contextlib import nullcontext as does_not_raise
 
 
@@ -29,7 +28,7 @@ class TestOrganization:
             ('address2', 'name', '1234546456',
              'www@email.com', does_not_raise()),
             ('address2', 'name', '1234546456', 'il.com',
-             pytest.raises(EmailNotValidError)),
+             pytest.raises(ValidationError)),
             (3, 'name', None, 'www@email.com', pytest.raises(ValidationError)),
             (None, 'name', '1234546456', 'www@email.com',
              pytest.raises(ValidationError)),

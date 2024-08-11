@@ -5,6 +5,10 @@ from loguru import logger
 from src.config import settings
 from src.persistence.database.base import engine, BaseDB
 from src.persistence.database.models import user_models, organization_models
+from src.persistence.repositories.user_repositories import UserRepository
+from src.core.schemes.user import User
+from src.core.schemes.full_name import FullName
+from src.application.auth.auth_utils import PasswordUtils
 
 
 @logger.catch
@@ -31,10 +35,25 @@ async def setup_db() -> None:
 
 
 @logger.catch
+async def create_admin() -> None:
+    admin = User(
+        role=None,
+        login=settings.ADMIN_LOGIN,
+        hashed_password=PasswordUtils.hash_password(settings.ADMIN_PASSWORD),
+        email=settings.ADMIN_EMAIL,
+        full_name=FullName(surname=None, name='admin', patronymic=None),
+        active=True,
+        admin=True
+    )
+    await UserRepository().add(admin)
+
+
+@logger.catch
 async def setup_environment() -> None:
     setup_file_system()
     setup_logger()
     await setup_db()
+    await create_admin()
 
 
 if __name__ == '__main__':

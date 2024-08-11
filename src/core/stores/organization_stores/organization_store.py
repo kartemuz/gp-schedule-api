@@ -1,9 +1,6 @@
 from abc import abstractmethod, ABC
 from src.core.schemes.organization import Organization
-from typing import Optional, List
 from src.config import settings
-
-# SCHEME = Organizationz
 
 
 class OrganizationStore(ABC):
@@ -14,7 +11,7 @@ class OrganizationStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str = settings.ORGANIZATION_NAME) -> Optional[scheme]:
+    async def get(self, name: str = settings.ORGANIZATION_NAME) -> scheme:
         pass
 
     @abstractmethod

@@ -1,2 +1,1 @@
-from email_validator import EmailNotValidError
 from pydantic import ValidationError

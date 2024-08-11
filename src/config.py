@@ -1,12 +1,16 @@
 from typing import Final
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
+
+
+BASE_DIR: Path = Path(__file__).parent.parent
 
 
 class Settings(BaseSettings):
 
     DEBUG_STATUS: Final = True
     TEST_STATUS: Final = True
-    ENV_PATH: Final = '.env' if TEST_STATUS is False else '.test.env'
+    ENV_PATH: Path = BASE_DIR / '.env' if TEST_STATUS is False else BASE_DIR / '.test.env'
 
     DB_NAME: str
     DB_HOST: str
@@ -16,7 +20,17 @@ class Settings(BaseSettings):
 
     ORGANIZATION_NAME: str
 
-    STATIC_DIR: Final = 'static'
+    STATIC_DIR: Path = BASE_DIR / 'static'
+
+    PRIVATE_KEY_PATH: Path = BASE_DIR / 'certs' / 'jwt-private.pem'
+    PUBLIC_KEY_PATH: Path = BASE_DIR / 'certs' / 'jwt-public.pem'
+    TOKEN_ALGORITHM: Final = 'RS256'
+    TOKEN_EXPIRE_MINUTES: Final = 60
+    TOKEN_TYPE: str = 'Bearer'
+
+    ADMIN_LOGIN: str
+    ADMIN_PASSWORD: str
+    ADMIN_EMAIL: str
 
     LOG_DIR: Final = 'logs'
     LOG_FORMAT: Final = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | " \

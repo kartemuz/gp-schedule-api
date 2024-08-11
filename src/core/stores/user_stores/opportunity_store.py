@@ -1,28 +1,27 @@
 from abc import abstractmethod, ABC
 from src.core.schemes.user import Opportunity
-from typing import Optional, List
-
-
-SCHEME = Opportunity
+from typing import List
 
 
 class OpportunityStore(ABC):
+    scheme = Opportunity
+
     @abstractmethod
-    async def add() -> None:
+    async def add(self, obj: scheme) -> None:
         pass
 
     @abstractmethod
-    async def get(id: Optional[int] = None, name: Optional[str] = None) -> SCHEME:
+    async def get(self, name: str) -> scheme:
         pass
 
-    @abstractmethod
-    async def edit(obj: SCHEME) -> None:
-        pass
+    # @abstractmethod
+    # async def edit(self, obj: scheme) -> None:
+    #     pass
+
+    # @abstractmethod
+    # async def delete(self, name: str) -> None:
+    #     pass
 
     @abstractmethod
-    async def delete(id: Optional[int] = None, name: Optional[str] = None) -> None:
-        pass
-
-    @abstractmethod
-    async def get_all() -> List[SCHEME]:
+    async def get_all(self) -> List[scheme]:
         pass
