@@ -1,6 +1,6 @@
 import pytest
-from src.core.schemes.organization import SocialNetwork, Organization
-from src.core.exceptions import ValidationError
+from src_old.core.schemes.organization import SocialNetwork, Organization
+from src_old.core.exceptions import ValidationError
 from contextlib import nullcontext as does_not_raise
 
 

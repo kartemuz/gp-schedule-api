@@ -1,56 +1,61 @@
-from typing import Final
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
-
+from pydantic import BaseModel, EmailStr
 
 BASE_DIR: Path = Path(__file__).parent.parent
+ENV_PATH: Path = BASE_DIR / '.env'
+TEST_ENV_PATH: Path = BASE_DIR / '.test.env'
+
+
+class DatabaseSettings(BaseModel):
+    name: str
+    host: str
+    port: int
+    user: str
+    password: str
+
+    repr_cols_num: int = 4
+
+    short_string_length: int = 100
+    long_string_length: int = 1000
+
+    @property
+    def url(self) -> str:
+        return f'mysql+aiomysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}?charset=utf8mb4'
+
+
+class AuthSettings(BaseModel):
+    private_key_path: Path = BASE_DIR / 'certs' / 'jwt-private.pem'
+    public_key_path: Path = BASE_DIR / 'certs' / 'jwt-public.pem'
+    token_algorithm: str = 'RS256'
+    token_expire_minutes: int = 60 * 24
+    token_type: str = 'Bearer'
+
+
+class AdminSettings(BaseModel):
+    login: str
+    password: str
+    email: EmailStr
+
+
+class OrganizationSettings(BaseModel):
+    name: str
 
 
 class Settings(BaseSettings):
-
-    DEBUG_STATUS: Final = True
-    TEST_STATUS: Final = True
-    ENV_PATH: Path = BASE_DIR / '.env' if TEST_STATUS is False else BASE_DIR / '.test.env'
-
-    DB_NAME: str
-    DB_HOST: str
-    DB_PORT: int
-    DB_USER: str
-    DB_PASSWORD: str
-
-    ORGANIZATION_NAME: str
-
-    STATIC_DIR: Path = BASE_DIR / 'static'
-
-    PRIVATE_KEY_PATH: Path = BASE_DIR / 'certs' / 'jwt-private.pem'
-    PUBLIC_KEY_PATH: Path = BASE_DIR / 'certs' / 'jwt-public.pem'
-    TOKEN_ALGORITHM: Final = 'RS256'
-    TOKEN_EXPIRE_MINUTES: Final = 60
-    TOKEN_TYPE: str = 'Bearer'
-
-    ADMIN_LOGIN: str
-    ADMIN_PASSWORD: str
-    ADMIN_EMAIL: str
-
-    LOG_DIR: Final = 'logs'
-    LOG_FORMAT: Final = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | " \
-                        "<level>{level: <8}</level> | " \
-                        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
-    LOG_ROTATION: Final = '00:00'
-    LOG_FILE_NAME: Final = '{time}.log' if TEST_STATUS is False else 'test.log'
-
-    @property
-    def db_url(self) -> str:
-        result: str
-        db_name: Final = 'mysql'
-        db_engine: Final = 'aiomysql'
-        charset: Final = 'utf8mb4'
-        result = f'{db_name}+{db_engine}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={charset}'
-        return result
-
     model_config = SettingsConfigDict(
-        env_file=ENV_PATH
+        env_file=ENV_PATH,
+        case_sensitive=False,
+        env_nested_delimiter='__',
+        env_prefix='CONFIG__'
     )
+    debug: bool
+    test: bool
+
+    db: DatabaseSettings
+    auth: AuthSettings = AuthSettings()
+    admin: AdminSettings
+    org: OrganizationSettings
 
 
 settings = Settings()

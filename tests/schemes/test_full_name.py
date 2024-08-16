@@ -1,5 +1,5 @@
 import pytest
-from src.core.schemes.full_name import FullName
+from src_old.core.schemes.full_name import FullName
 from contextlib import nullcontext as does_not_raise
 from pydantic import ValidationError
 

@@ -1,2 +1,0 @@
-from .organization_repository import OrganizationRepository
-from .social_network_repository import SocialNetworkRepository

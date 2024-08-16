@@ -1,6 +1,7 @@
+
 import pytest
-from src.core.schemes.user import Action, Entity, Opportunity, Role, User
-from src.core.exceptions import ValidationError
+from src_old.core.schemes.user import Action, Entity, Opportunity, Role, User
+from src_old.core.exceptions import ValidationError
 from contextlib import nullcontext as does_not_raise
 
 
