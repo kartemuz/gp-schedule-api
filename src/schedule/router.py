@@ -242,7 +242,7 @@ direction_router = APIRouter(
 
 
 @direction_router.get('/get')
-async def get_type_direction(
+async def get_direction(
     id: Optional[int] = None,
     auth_user: User = Depends(get_auth_active_user)
 ) -> Direction | List[Direction]:
@@ -256,7 +256,7 @@ async def get_type_direction(
 
 
 @direction_router.post('/add')
-async def add_type_direction(
+async def add_direction(
     direction: Direction,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
@@ -264,7 +264,7 @@ async def add_type_direction(
 
 
 @direction_router.post('/edit')
-async def edit_type_direction(
+async def edit_direction(
     direction: Direction,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
@@ -272,7 +272,7 @@ async def edit_type_direction(
 
 
 @direction_router.get('/delete')
-async def delete_type_direction(
+async def delete_direction(
     id: int,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
