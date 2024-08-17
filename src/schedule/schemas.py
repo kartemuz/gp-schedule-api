@@ -38,5 +38,5 @@ class Flow(BaseModel):
 
 class Teacher(BaseModel):
     id: int
-    full_name: FullName
+    full_name: Optional[FullName]
     position: Optional[str]

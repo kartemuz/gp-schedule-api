@@ -234,12 +234,58 @@ async def delete_type_direction(
 ) -> None:
     await schedule_service.type_direction_store.delete(id)
 
+
+direction_router = APIRouter(
+    prefix='/direction',
+    tags=tags
+)
+
+
+@direction_router.get('/get')
+async def get_type_direction(
+    id: Optional[int] = None,
+    auth_user: User = Depends(get_auth_active_user)
+) -> Direction | List[Direction]:
+    if id:
+        result: Direction = await schedule_service.direction_store.get(id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        result: List[Direction] = await schedule_service.direction_store.get_all()
+    return result
+
+
+@direction_router.post('/add')
+async def add_type_direction(
+    direction: Direction,
+    auth_user: User = Depends(get_auth_active_user)
+) -> None:
+    await schedule_service.direction_store.add(direction)
+
+
+@direction_router.post('/edit')
+async def edit_type_direction(
+    direction: Direction,
+    auth_user: User = Depends(get_auth_active_user)
+) -> None:
+    await schedule_service.direction_store.edit(direction)
+
+
+@direction_router.get('/delete')
+async def delete_type_direction(
+    id: int,
+    auth_user: User = Depends(get_auth_active_user)
+) -> None:
+    await schedule_service.direction_store.delete(id)
+
+
 routers = (
     group_router,
     flow_router,
     discipline_router,
     teacher_router,
     type_direction_router,
+    direction_router
 )
 
 for r in routers:

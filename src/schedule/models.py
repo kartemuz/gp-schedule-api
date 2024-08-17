@@ -45,6 +45,33 @@ class DirectionDB(BaseDB):
     )
     hours: Mapped[int] = mapped_column(nullable=False)
 
+    type_direction: Mapped['TypeDirectionDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+    disciplines_directions: Mapped[List['DisciplineDirection']] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+
+class DisciplineDirection(BaseDB):
+    __tablename__ = 'discipline_direction'
+    id: Mapped[int_pk]
+    discipline_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(DisciplineDB, 'id')
+        )
+    )
+    direction_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(DirectionDB, 'id')
+        )
+    )
+
+    discipline: Mapped['DisciplineDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
 
 class GroupDB(BaseDB):
     __tablename__ = 'group'
@@ -56,6 +83,10 @@ class GroupDB(BaseDB):
     )
     number_group: Mapped[int] = mapped_column(nullable=False, unique=True)
 
+    direction: Mapped['DirectionDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
 
 class FlowDB(BaseDB):
     __tablename__ = 'flow'
@@ -64,6 +95,10 @@ class FlowDB(BaseDB):
         String(DBConstants.SHORT_STRING_LENGTH),
         nullable=False,
         unique=True
+    )
+
+    flows_groups: Mapped[List['FlowGroupDB']] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
 
@@ -80,6 +115,10 @@ class FlowGroupDB(BaseDB):
         ForeignKey(
             DBUtils.get_attribute_path(GroupDB, 'id')
         )
+    )
+
+    group: Mapped['GroupDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
 
@@ -99,5 +138,6 @@ class TeacherDB(BaseDB):
         nullable=False
     )
     position: Mapped[str] = mapped_column(
-        String(DBConstants.SHORT_STRING_LENGTH)
+        String(DBConstants.SHORT_STRING_LENGTH),
+        nullable=False
     )
