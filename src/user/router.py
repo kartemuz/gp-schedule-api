@@ -5,11 +5,11 @@ from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 
 
-TAG: Final = 'user'
+tags: Final = ['user']
 
 user_router = APIRouter(
     prefix='/user',
-    tags=[TAG]
+    tags=tags,
 )
 
 
@@ -41,7 +41,7 @@ async def delete_user(login: str, auth_user: User = Depends(get_auth_active_user
 
 opportunity_router = APIRouter(
     prefix="/opportunity",
-    tags=[TAG]
+    tags=tags
 )
 
 
@@ -58,7 +58,7 @@ async def get_opportunity(name: Optional[str] = None, auth_user: User = Depends(
 
 role_router = APIRouter(
     prefix="/role",
-    tags=[TAG]
+    tags=tags
 )
 
 

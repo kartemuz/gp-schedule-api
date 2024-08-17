@@ -42,6 +42,10 @@ class OrganizationSettings(BaseModel):
     name: str
 
 
+class ClientSettings(BaseModel):
+    ip: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
@@ -56,6 +60,7 @@ class Settings(BaseSettings):
     auth: AuthSettings = AuthSettings()
     admin: AdminSettings
     org: OrganizationSettings
+    client: ClientSettings
 
 
 settings = Settings()

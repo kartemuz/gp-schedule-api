@@ -6,12 +6,12 @@ from src.org.schemas import Organization, SocialNetwork
 from src.org.service import org_service
 from typing import Optional, List
 
-TAG: Final = 'organization'
+tags: Final = ['organization']
 
 
 org_router = APIRouter(
     prefix='/organization',
-    tags=[TAG]
+    tags=tags
 )
 
 
@@ -32,7 +32,7 @@ async def edit_org(organization: Organization, auth_user: User = Depends(get_aut
 
 soc_net_router = APIRouter(
     prefix='/social_network',
-    tags=[TAG]
+    tags=tags
 )
 
 

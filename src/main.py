@@ -2,7 +2,9 @@ from fastapi import FastAPI, APIRouter
 from src.auth.router import auth_router
 from src.user.router import user_router
 from src.org.router import org_router
+from src.schedule.router import schedule_router
 from fastapi.middleware.cors import CORSMiddleware
+from src.config import settings
 
 app = FastAPI(
     title='Schedule'
@@ -16,6 +18,7 @@ routers = (
     auth_router,
     user_router,
     org_router,
+    schedule_router,
 )
 
 for r in routers:
@@ -25,6 +28,8 @@ app.include_router(api)
 
 origins = [
     '*'
+] if settings.test else [
+    settings.client.ip
 ]
 
 app.add_middleware(

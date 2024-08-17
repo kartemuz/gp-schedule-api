@@ -6,6 +6,7 @@ from sqlalchemy import select
 class DBUtils:
     @staticmethod
     def get_attribute_path(model: BaseDB, attributte: str) -> str:
+        '''Helps in connection with foreign keys'''
         return f'{model.__tablename__}.{attributte}'
 
     @staticmethod
