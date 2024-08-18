@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, mapped_column
 from src.config import settings
-from typing import Annotated, Tuple, Final
+from typing import Annotated, Tuple
 from sqlalchemy import String
 from src.config import settings
 

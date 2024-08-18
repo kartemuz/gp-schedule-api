@@ -2,7 +2,7 @@ from src.org.schemas import Organization, SocialNetwork
 from src.org.models import OrgDB, SocNetDB
 from src.org.stores import OrgStore, SocNetStore
 from src.database import session_factory
-from src.exceptions import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from src.utils import DBUtils
 from typing import List
 from src.config import settings

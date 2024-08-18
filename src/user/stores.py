@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 from src.user.schemas import Action, Entity, Opportunity, Role, User
-from typing import List
+from typing import List, Optional
 
 
 class ActionStore(ABC):
@@ -9,7 +9,7 @@ class ActionStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Action:
+    async def get(self, name: str) -> Optional[Action]:
         pass
 
     @abstractmethod
@@ -23,7 +23,7 @@ class EntityStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Entity:
+    async def get(self, name: str) -> Optional[Entity]:
         pass
 
     @abstractmethod
@@ -37,7 +37,7 @@ class OpportunityStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Opportunity:
+    async def get(self, name: str) -> Optional[Opportunity]:
         pass
 
     @abstractmethod
@@ -51,7 +51,7 @@ class RoleStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Role:
+    async def get(self, name: str) -> Optional[Role]:
         pass
 
     @abstractmethod
@@ -73,7 +73,7 @@ class UserStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, login: str) -> User:
+    async def get(self, login: str) -> Optional[User]:
         pass
 
     @abstractmethod

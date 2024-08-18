@@ -5,21 +5,21 @@ from src.schedule.schemas import Discipline
 
 class DisciplineStore(ABC):
     @abstractmethod
-    async def get(id: int) -> Optional[Discipline]:
+    async def get(self, id: int) -> Optional[Discipline]:
         pass
 
     @abstractmethod
-    async def get_all() -> List[Discipline]:
+    async def get_all(self) -> List[Discipline]:
         pass
 
     @abstractmethod
-    async def add(obj: Discipline) -> None:
+    async def add(self, obj: Discipline) -> None:
         pass
 
     @abstractmethod
-    async def delete(id: int) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
     @abstractmethod
-    async def edit(obj: Discipline) -> None:
+    async def edit(self, obj: Discipline) -> None:
         pass

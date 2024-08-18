@@ -3,6 +3,7 @@ from typing import Optional, List, Final
 from src.user.schemas import User, Opportunity, Role
 from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
+from src.auth.utils import PasswordUtils
 
 
 tags: Final = ['user']
@@ -26,11 +27,13 @@ async def get_user(login: Optional[str] = None, auth_user: User = Depends(get_au
 
 @user_router.post('/add')
 async def add_user(user: User, auth_user: User = Depends(get_auth_active_user)) -> None:
+    user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
     await user_service.user_store.add(user)
 
 
 @user_router.post('/edit')
 async def edit_user(user: User, auth_user: User = Depends(get_auth_active_user)) -> None:
+    user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
     await user_service.user_store.edit(user)
 
 

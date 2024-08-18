@@ -4,7 +4,7 @@ from src.auth.schemas import UserLoginData
 from src.user.schemas import User
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils, JWTUtils
-from src.exceptions import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from src.auth.exceptions import DecodeError
 
 http_bearer = HTTPBearer()

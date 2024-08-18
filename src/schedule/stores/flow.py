@@ -5,21 +5,21 @@ from src.schedule.schemas import Flow
 
 class FlowStore(ABC):
     @abstractmethod
-    async def get(id: int) -> Optional[Flow]:
+    async def get(self, id: int) -> Optional[Flow]:
         pass
 
     @abstractmethod
-    async def get_all() -> List[Flow]:
+    async def get_all(self) -> List[Flow]:
         pass
 
     @abstractmethod
-    async def add(obj: Flow) -> None:
+    async def add(self, obj: Flow) -> None:
         pass
 
     @abstractmethod
-    async def delete(id: int) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
     @abstractmethod
-    async def edit(obj: Flow) -> None:
+    async def edit(self, obj: Flow) -> None:
         pass

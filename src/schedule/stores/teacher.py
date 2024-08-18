@@ -5,21 +5,21 @@ from src.schedule.schemas import Teacher
 
 class TeacherStore(ABC):
     @abstractmethod
-    async def get(id: int) -> Optional[Teacher]:
+    async def get(self, id: int) -> Optional[Teacher]:
         pass
 
     @abstractmethod
-    async def get_all() -> List[Teacher]:
+    async def get_all(self) -> List[Teacher]:
         pass
 
     @abstractmethod
-    async def add(obj: Teacher) -> None:
+    async def add(self, obj: Teacher) -> None:
         pass
 
     @abstractmethod
-    async def delete(id: int) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
     @abstractmethod
-    async def edit(obj: Teacher) -> None:
+    async def edit(self, obj: Teacher) -> None:
         pass

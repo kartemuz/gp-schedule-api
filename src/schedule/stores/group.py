@@ -5,21 +5,21 @@ from src.schedule.schemas import Group
 
 class GroupStore(ABC):
     @abstractmethod
-    async def get(id: int) -> Optional[Group]:
+    async def get(self, id: int) -> Optional[Group]:
         pass
 
     @abstractmethod
-    async def get_all() -> List[Group]:
+    async def get_all(self) -> List[Group]:
         pass
 
     @abstractmethod
-    async def add(obj: Group) -> None:
+    async def add(self, obj: Group) -> None:
         pass
 
     @abstractmethod
-    async def delete(id: int) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
     @abstractmethod
-    async def edit(obj: Group) -> None:
+    async def edit(self, obj: Group) -> None:
         pass

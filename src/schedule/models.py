@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import BaseDB, int_pk
 from src.constants import DBConstants
 from src.utils import DBUtils
+from src.user.models import UserDB
 
 
 class DisciplineDB(BaseDB):
@@ -59,13 +60,17 @@ class DisciplineDirection(BaseDB):
     id: Mapped[int_pk]
     discipline_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(DisciplineDB, 'id')
-        )
+            DBUtils.get_attribute_path(DisciplineDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False,
     )
     direction_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(DirectionDB, 'id')
-        )
+            DBUtils.get_attribute_path(DirectionDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False
     )
 
     discipline: Mapped['DisciplineDB'] = relationship(
@@ -79,7 +84,8 @@ class GroupDB(BaseDB):
     direction_id: Mapped[int] = mapped_column(
         ForeignKey(
             DBUtils.get_attribute_path(DirectionDB, 'id')
-        )
+        ),
+        nullable=True
     )
     number_group: Mapped[int] = mapped_column(nullable=False, unique=True)
 
@@ -107,14 +113,17 @@ class FlowGroupDB(BaseDB):
     id: Mapped[int_pk]
     flow_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(FlowDB, 'id')
+            DBUtils.get_attribute_path(FlowDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )
     group_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(GroupDB, 'id')
-        )
+            DBUtils.get_attribute_path(GroupDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False
     )
 
     group: Mapped['GroupDB'] = relationship(
@@ -139,5 +148,44 @@ class TeacherDB(BaseDB):
     )
     position: Mapped[str] = mapped_column(
         String(DBConstants.SHORT_STRING_LENGTH),
+        nullable=False
+    )
+
+
+class LoadListDB(BaseDB):
+    __tablename__ = 'load_list'
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH),
+        nullable=False,
+        unique=True
+    )
+    user_login: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(UserDB, 'login'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False
+    )
+
+
+class LoadDB(BaseDB):
+    __tablename__ = 'load'
+    id: Mapped[int_pk]
+    load_list_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(LoadListDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False
+    )
+    teacher_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(TeacherDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
+        ),
+        nullable=False
+    )
+    hours: Mapped[int] = mapped_column(
         nullable=False
     )
