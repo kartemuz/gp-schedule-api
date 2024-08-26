@@ -1,20 +1,20 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from src.schedule.schemas import TypeDirection
+from src.schedule.schemas import TypeLesson
 from src.schemas import IdSchema
 
 
-class TypeDirectionStore(ABC):
+class TypeLessonStore(ABC):
     @abstractmethod
-    async def get(self, id: int) -> Optional[TypeDirection]:
+    async def get(self, id: int) -> Optional[TypeLesson]:
         pass
 
     @abstractmethod
-    async def get_all(self) -> List[TypeDirection]:
+    async def get_all(self) -> List[TypeLesson]:
         pass
 
     @abstractmethod
-    async def add(self, obj: TypeDirection) -> IdSchema:
+    async def add(self, obj: TypeLesson) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class TypeDirectionStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: TypeDirection) -> None:
+    async def edit(self, obj: TypeLesson) -> None:
         pass

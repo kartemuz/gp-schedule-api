@@ -1,6 +1,7 @@
 from src.schedule.stores import DirectionStore
 from typing import Optional, List
 from src.schedule.schemas import Direction, Discipline, TypeDirection
+from src.schemas import IdSchema
 from src.schedule.models import DirectionDB, DisciplineDirection
 from sqlalchemy import select
 from src.database import session_factory
@@ -58,7 +59,7 @@ class DirectionRepos(DirectionStore):
             result.append(await self.get(id))
         return result
 
-    async def add(self, obj: Direction) -> None:
+    async def add(self, obj: Direction) -> IdSchema:
         for disc in obj.disciplines:
             await discipline_repos.add(disc)
         await type_direction_repos.add(obj.type_direction)
@@ -71,9 +72,17 @@ class DirectionRepos(DirectionStore):
         )
         await DBUtils.insert_new(obj_db)
 
+        async with session_factory() as session:
+            query = select(DirectionDB).where(DirectionDB.name == obj.name)
+            query_result = await session.execute(query)
+            return IdSchema(id=query_result.scalar().id)
+
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(DirectionDB, id)
 
     async def edit(self, obj: Direction) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+direction_repos = DirectionRepos()

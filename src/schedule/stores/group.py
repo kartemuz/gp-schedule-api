@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from src.schedule.schemas import Group
+from src.schemas import IdSchema
 
 
 class GroupStore(ABC):
@@ -13,7 +14,7 @@ class GroupStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Group) -> None:
+    async def add(self, obj: Group) -> IdSchema:
         pass
 
     @abstractmethod

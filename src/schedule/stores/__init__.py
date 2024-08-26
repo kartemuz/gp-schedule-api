@@ -4,3 +4,7 @@ from .flow import FlowStore
 from .group import GroupStore
 from .teacher import TeacherStore
 from .type_direction import TypeDirectionStore
+from .room import RoomStore
+from .type_lesson import TypeLessonStore
+from .load_list import LoadListStore
+from .teacher_load_list import TeacherLoadListStore

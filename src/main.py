@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter
 from src.auth.router import auth_router
 from src.user.router import user_router
 from src.org.router import org_router
-from src.schedule.router import schedule_router
+from src.schedule.routers import schedule_router
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 

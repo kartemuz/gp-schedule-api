@@ -19,7 +19,7 @@ class Opportunity(BaseModel):
 
 class Role(BaseModel):
     name: str
-    opportunities: List[Opportunity] = []
+    opportunities: List[Opportunity]
 
 
 class User(BaseModel):
@@ -29,3 +29,12 @@ class User(BaseModel):
     hashed_password: bytes
     full_name: Optional[FullName]
     active: bool
+
+
+class UserEditSchema(BaseModel):
+    role: Optional[Role] = None
+    login: str
+    email: Optional[EmailStr] = None
+    hashed_password: Optional[bytes] = None
+    full_name: Optional[FullName] = None
+    active: Optional[None] = None

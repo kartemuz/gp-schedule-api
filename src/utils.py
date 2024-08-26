@@ -49,34 +49,29 @@ class DBUtils:
     @staticmethod
     async def select_by_id(model: BaseDB, id: int) -> Optional[BaseDB]:
         async with session_factory() as session:
-            query = select(model).where(model.id == id)
-            query_result = await session.execute(query)
-            if query_result:
-                result = query_result.scalar()
-            else:
-                result = None
-        return result
+            return await session.get(model, id)
 
     @staticmethod
     async def delete_by_id(model: BaseDB, id: int) -> None:
         obj_db = await DBUtils.select_by_id(model, id)
         async with session_factory() as session:
-            session.delete(obj_db)
-            await session.execute()
+            obj_db = await session.get(model, id)
+            await session.delete(obj_db)
+            await session.commit()
 
     @staticmethod
     async def delete_by_name(model: BaseDB, name: str) -> None:
         obj_db = await DBUtils.select_by_name(model, name)
         async with session_factory() as session:
-            session.delete(obj_db)
-            await session.execute()
+            await session.delete(obj_db)
+            await session.commit()
 
     @staticmethod
-    async def insert_new(model: BaseDB) -> None:
+    async def insert_new(model_db: BaseDB) -> None:
         async with session_factory() as session:
-            session.add(model)
+            session.add(model_db)
             try:
-                await session.execute()
+                await session.commit()
             except IntegrityError:
                 await session.rollback()
 

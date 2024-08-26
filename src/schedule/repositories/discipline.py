@@ -1,6 +1,7 @@
 from src.schedule.stores import DisciplineStore
 from typing import Optional, List
 from src.schedule.schemas import Discipline
+from src.schemas import IdSchema
 from src.schedule.models import DisciplineDB
 from src.utils import DBUtils
 
@@ -33,7 +34,7 @@ class DisciplineRepos(DisciplineStore):
             )
         return result
 
-    async def add(self, obj: Discipline) -> None:
+    async def add(self, obj: Discipline) -> IdSchema:
         obj_db = DisciplineDB(
             id=obj.id,
             name=obj.name,
@@ -41,6 +42,9 @@ class DisciplineRepos(DisciplineStore):
             practice_hours=obj.practice_hours
         )
         await DBUtils.insert_new(obj_db)
+
+        obj_db: DisciplineDB = await DBUtils.select_by_name(DisciplineDB, obj.name)
+        return IdSchema(id=obj_db.id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(DisciplineDB, id)

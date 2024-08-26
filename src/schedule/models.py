@@ -5,6 +5,7 @@ from src.database import BaseDB, int_pk
 from src.constants import DBConstants
 from src.utils import DBUtils
 from src.user.models import UserDB
+from datetime import date, time
 
 
 class DisciplineDB(BaseDB):
@@ -85,7 +86,7 @@ class GroupDB(BaseDB):
         ForeignKey(
             DBUtils.get_attribute_path(DirectionDB, 'id')
         ),
-        nullable=True
+        nullable=False
     )
     number_group: Mapped[int] = mapped_column(nullable=False, unique=True)
 
@@ -168,9 +169,13 @@ class LoadListDB(BaseDB):
         nullable=False
     )
 
+    teacher_load_lists: Mapped[List['TeacherLoadListDB']] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
 
-class LoadDB(BaseDB):
-    __tablename__ = 'load'
+
+class TeacherLoadListDB(BaseDB):
+    __tablename__ = 'teacher_load_list'
     id: Mapped[int_pk]
     load_list_id: Mapped[int] = mapped_column(
         ForeignKey(
@@ -188,4 +193,130 @@ class LoadDB(BaseDB):
     )
     hours: Mapped[int] = mapped_column(
         nullable=False
+    )
+
+    teacher: Mapped['TeacherDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+
+class TypeLessonDB(BaseDB):
+    __tablename__ = 'type_lesson'
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(String(DBConstants.SHORT_STRING_LENGTH),
+                                      nullable=False, unique=True)
+
+
+class RoomDB(BaseDB):
+    __tablename__ = 'room'
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(String(DBConstants.SHORT_STRING_LENGTH),
+                                      nullable=False, unique=True)
+
+
+class ScheduleListDB(BaseDB):
+    __tablename__ = 'schedule_list'
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(String(DBConstants.SHORT_STRING_LENGTH),
+                                      nullable=False, unique=True)
+    date_start: Mapped[date] = mapped_column(nullable=False)
+    date_end: Mapped[date] = mapped_column(nullable=False)
+    load_list_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(LoadListDB, 'id')
+        ),
+        nullable=False
+    )
+    active: Mapped[bool] = mapped_column(nullable=False)
+
+    load_list: Mapped['LoadListDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+
+class ScheduleDB(BaseDB):
+    __tablename__ = 'schedule'
+    id: Mapped[int_pk]
+    schedule_list_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(ScheduleListDB, 'id')
+        )
+    )
+    date_: Mapped[date] = mapped_column(nullable=False)
+    time_start: Mapped[time] = mapped_column(nullable=False)
+    time_end: Mapped[time] = mapped_column(nullable=False)
+    type_lesson_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(TypeLessonDB, 'id')),
+        nullable=False
+    )
+    flow_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(FlowDB, 'id')),
+        nullable=False
+    )
+    discipline_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(DisciplineDB, 'id')),
+        nullable=False
+    )
+    room_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(RoomDB, 'id')
+        ),
+        nullable=False
+    )
+
+    type_lesson: Mapped['TypeLessonDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+    flow: Mapped['FlowDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+    discipline: Mapped['DisciplineDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+    room: Mapped['RoomDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+
+class ScheduleTeacherDB(BaseDB):
+    __tablename__ = 'schedule_teacher'
+    id: Mapped[int_pk]
+    teacher_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(TeacherDB, 'id')
+        ),
+        nullable=False
+    )
+    schedule_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(ScheduleDB, 'id')
+        ),
+        nullable=False
+    )
+
+    teacher: Mapped['TeacherDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+    change: Mapped['ChangeDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
+
+class ChangeDB(BaseDB):
+    __tablename__ = 'change'
+    id: Mapped[int_pk]
+    schedule_teacher_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(ScheduleTeacherDB, 'id')
+        ),
+        nullable=False
+    )
+    teacher_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            DBUtils.get_attribute_path(TeacherDB, 'id')
+        ),
+        nullable=False
+    )
+    teacher: Mapped['TeacherDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Optional, List, Final
-from src.user.schemas import User, Opportunity, Role
+from src.user.schemas import User, Opportunity, Role, UserEditSchema
 from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils
@@ -32,8 +32,21 @@ async def add_user(user: User, auth_user: User = Depends(get_auth_active_user)) 
 
 
 @user_router.post('/edit')
-async def edit_user(user: User, auth_user: User = Depends(get_auth_active_user)) -> None:
-    user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
+async def edit_user(user_edit_schema: UserEditSchema, auth_user: User = Depends(get_auth_active_user)) -> None:
+    '''The client transmits only the changed data, login is required'''
+    user = await user_service.user_store.get(login=user_edit_schema.login)
+    if user_edit_schema.hashed_password:
+        user.hashed_password = PasswordUtils.hash_password(
+            user_edit_schema.hashed_password)
+    if user_edit_schema.active is not None:
+        user.active = user_edit_schema.active
+    if user_edit_schema.email:
+        user.email = user_edit_schema.email
+    if user_edit_schema.full_name:
+        user.full_name = user_edit_schema.full_name
+    if user_edit_schema.role:
+        user.role = user_edit_schema.role
+
     await user_service.user_store.edit(user)
 
 

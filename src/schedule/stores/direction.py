@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from src.schedule.schemas import Direction
+from src.schemas import IdSchema
 
 
 class DirectionStore(ABC):
@@ -13,7 +14,7 @@ class DirectionStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Direction) -> None:
+    async def add(self, obj: Direction) -> IdSchema:
         pass
 
     @abstractmethod

@@ -1,9 +1,12 @@
 from src.schedule.stores import TeacherStore
 from typing import Optional, List
 from src.schedule.schemas import Teacher
+from src.schemas import IdSchema
 from src.schedule.models import TeacherDB
 from src.schemas import FullName
 from src.utils import DBUtils
+from src.database import session_factory
+from sqlalchemy import select, and_
 
 
 class TeacherRepos(TeacherStore):
@@ -40,7 +43,7 @@ class TeacherRepos(TeacherStore):
             )
         return result
 
-    async def add(self, obj: Teacher) -> None:
+    async def add(self, obj: Teacher) -> IdSchema:
         obj_db = TeacherDB(
             id=obj.id,
             surname=obj.full_name.surname,
@@ -49,6 +52,18 @@ class TeacherRepos(TeacherStore):
             position=obj.position
         )
         await DBUtils.insert_new(obj_db)
+        async with session_factory() as session:
+            query = select(TeacherDB).where(
+                and_(
+                    TeacherDB.surname == obj.full_name.surname,
+                    TeacherDB.name == obj.full_name.name,
+                    TeacherDB.patronymic == obj.full_name.patronymic,
+                    TeacherDB.position == obj.position
+                )
+            )
+            query_result = await session.execute(query)
+            obj_db = query_result.scalar()
+            return IdSchema(id=obj_db.id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(TeacherDB, id)
@@ -56,3 +71,6 @@ class TeacherRepos(TeacherStore):
     async def edit(self, obj: Teacher) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+teacher_repos = TeacherRepos()

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from src.schedule.schemas import Teacher
+from src.schemas import IdSchema
 
 
 class TeacherStore(ABC):
@@ -13,7 +14,7 @@ class TeacherStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Teacher) -> None:
+    async def add(self, obj: Teacher) -> IdSchema:
         pass
 
     @abstractmethod

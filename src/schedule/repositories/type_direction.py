@@ -1,6 +1,7 @@
 from src.schedule.stores import TypeDirectionStore
 from typing import Optional, List
 from src.schedule.schemas import TypeDirection
+from src.schemas import IdSchema
 from src.schedule.models import TypeDirectionDB
 from src.utils import DBUtils
 
@@ -29,12 +30,14 @@ class TypeDirectionRepos(TypeDirectionStore):
             )
         return result
 
-    async def add(self, obj: TypeDirection) -> None:
+    async def add(self, obj: TypeDirection) -> IdSchema:
         obj_db = TypeDirectionDB(
             id=obj.id,
             name=obj.name,
         )
         await DBUtils.insert_new(obj_db)
+        obj_db: TypeDirectionDB = await DBUtils.select_by_name(TypeDirectionDB, obj.name)
+        return IdSchema(id=obj_db.id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(TypeDirectionDB, id)

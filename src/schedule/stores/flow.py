@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from src.schedule.schemas import Flow
+from src.schemas import IdSchema
 
 
 class FlowStore(ABC):
@@ -13,7 +14,7 @@ class FlowStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Flow) -> None:
+    async def add(self, obj: Flow) -> IdSchema:
         pass
 
     @abstractmethod
