@@ -16,8 +16,7 @@ group_router = APIRouter(
 
 @group_router.get('/get')
 async def get_group(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> Group | List[Group]:
     if id:
         result: Group = await schedule_service.group_store.get(id)

@@ -8,7 +8,11 @@ from src.schedule.stores import (
     TypeLessonStore,
     LoadListStore,
     TeacherLoadListStore,
-    RoomStore
+    RoomStore,
+    ScheduleListStore,
+    ScheduleStore,
+    ScheduleTeacherStore,
+    ChangeStore
 )
 
 from src.schedule.repositories import (
@@ -21,7 +25,11 @@ from src.schedule.repositories import (
     TypeLessonRepos,
     LoadListRepos,
     TeacherLoadListRepos,
-    RoomRepos
+    RoomRepos,
+    ScheduleListRepos,
+    ScheduleRepos,
+    ScheduleTeacherRepos,
+    ChangeRepos
 )
 
 
@@ -36,6 +44,10 @@ class ScheduleService:
     load_list_store: LoadListStore
     teacher_load_list_store: TeacherLoadListStore
     room_store: RoomStore
+    schedule_list_store: ScheduleListStore
+    schedule_store: ScheduleStore
+    schedule_teacher_store: ScheduleTeacherStore
+    change_store: ChangeStore
 
     def __init__(
         self,
@@ -48,7 +60,11 @@ class ScheduleService:
         type_lesson_repository: TypeLessonStore,
         load_list_repository: LoadListStore,
         teacher_load_list_repository: TeacherLoadListStore,
-        room_repository: RoomStore
+        room_repository: RoomStore,
+        schedule_list_repository: ScheduleListStore,
+        schedule_repository: ScheduleStore,
+        schedule_teacher_repository: ScheduleTeacherStore,
+        change_repository: ChangeStore
 
     ) -> None:
         self.direction_store = direction_repository()
@@ -61,6 +77,10 @@ class ScheduleService:
         self.load_list_store = load_list_repository()
         self.teacher_load_list_store = teacher_load_list_repository()
         self.room_store = room_repository()
+        self.schedule_list_store = schedule_list_repository()
+        self.schedule_store = schedule_repository()
+        self.schedule_teacher_store = schedule_teacher_repository()
+        self.change_store = change_repository()
 
 
 schedule_service = ScheduleService(
@@ -73,5 +93,9 @@ schedule_service = ScheduleService(
     type_lesson_repository=TypeLessonRepos,
     load_list_repository=LoadListRepos,
     teacher_load_list_repository=TeacherLoadListRepos,
-    room_repository=RoomRepos
+    room_repository=RoomRepos,
+    schedule_list_repository=ScheduleListRepos,
+    schedule_repository=ScheduleRepos,
+    schedule_teacher_repository=ScheduleTeacherRepos,
+    change_repository=ChangeRepos
 )

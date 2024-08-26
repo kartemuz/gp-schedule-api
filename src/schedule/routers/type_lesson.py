@@ -16,8 +16,7 @@ type_lesson_router = APIRouter(
 
 @type_lesson_router.get('/get')
 async def get_type_lesson(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> TypeLesson | List[TypeLesson]:
     if id:
         result: TypeLesson = await schedule_service.type_lesson_store.get(id)

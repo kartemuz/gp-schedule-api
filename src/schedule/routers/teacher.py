@@ -15,8 +15,7 @@ teacher_router = APIRouter(
 
 @teacher_router.get('/get')
 async def get_teacher(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> Teacher | List[Teacher]:
     if id:
         result: Teacher = await schedule_service.teacher_store.get(id)

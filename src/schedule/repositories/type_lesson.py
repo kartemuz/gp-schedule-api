@@ -45,3 +45,6 @@ class TypeLessonRepos(TypeLessonStore):
     async def edit(self, obj: TypeLesson) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+type_lesson_repos = TypeLessonRepos()

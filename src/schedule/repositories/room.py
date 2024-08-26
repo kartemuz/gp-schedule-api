@@ -45,3 +45,6 @@ class RoomRepos(RoomStore):
     async def edit(self, obj: Room) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+room_repos = RoomRepos()

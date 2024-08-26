@@ -15,8 +15,7 @@ discipline_router = APIRouter(
 
 @discipline_router.get('/get')
 async def get_discipline(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> Discipline | List[Discipline]:
     if id:
         result: Discipline = await schedule_service.discipline_store.get(id)

@@ -37,6 +37,7 @@ class GroupRepos(GroupStore):
             result.append(
                 await self.get(id)
             )
+        return result
 
     async def add(self, obj: Group) -> IdSchema:
         direction_id = await direction_repos.add(obj.direction)

@@ -92,3 +92,6 @@ class FlowRepos(FlowStore):
     async def edit(self, obj: Flow) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+flow_repos = FlowRepos()

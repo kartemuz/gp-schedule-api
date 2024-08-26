@@ -80,3 +80,6 @@ class LoadListRepos(LoadListStore):
     async def edit(self, obj: LoadList) -> None:
         await self.delete(obj.id)
         await self.add(obj)
+
+
+load_list_repos = LoadListRepos()

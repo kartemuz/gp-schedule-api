@@ -8,3 +8,7 @@ from .type_lesson import TypeLessonRepos
 from .room import RoomRepos
 from .teacher_load_list import TeacherLoadListRepos
 from .load_list import LoadListRepos
+from .schedule_list import ScheduleListRepos
+from .schedule import ScheduleRepos
+from .schedule_teacher import ScheduleTeacherRepos
+from .change import ChangeRepos

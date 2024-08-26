@@ -16,8 +16,7 @@ direction_router = APIRouter(
 
 @direction_router.get('/get')
 async def get_direction(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> Direction | List[Direction]:
     if id:
         result: Direction = await schedule_service.direction_store.get(id)

@@ -16,8 +16,7 @@ type_direction_router = APIRouter(
 
 @type_direction_router.get('/get')
 async def get_type_direction(
-    id: Optional[int] = None,
-    auth_user: User = Depends(get_auth_active_user)
+    id: Optional[int] = None
 ) -> TypeDirection | List[TypeDirection]:
     if id:
         result: TypeDirection = await schedule_service.type_direction_store.get(id)

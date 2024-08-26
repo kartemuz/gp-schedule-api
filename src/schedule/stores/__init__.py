@@ -8,3 +8,7 @@ from .room import RoomStore
 from .type_lesson import TypeLessonStore
 from .load_list import LoadListStore
 from .teacher_load_list import TeacherLoadListStore
+from .schedule_list import ScheduleListStore
+from .schedule import ScheduleStore
+from .schedule_teacher import ScheduleTeacherStore
+from .change import ChangeStore

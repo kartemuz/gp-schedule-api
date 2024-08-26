@@ -4,7 +4,7 @@ from src.schedule.schemas import Schedule
 from src.schemas import IdSchema
 
 
-class RoomStore(ABC):
+class ScheduleStore(ABC):
     @abstractmethod
     async def get(self, id: int) -> Optional[Schedule]:
         pass
