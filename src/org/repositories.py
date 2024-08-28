@@ -55,15 +55,13 @@ class OrgRepos(OrgStore):
         async with session_factory() as session:
             org_db = OrgDB(
                 name=obj.name,
+                full_name=obj.full_name,
                 address=obj.address,
                 phone=obj.phone,
                 email=obj.email
             )
             session.add(org_db)
-            try:
-                await session.commit()
-            except IntegrityError:
-                await session.rollback()
+            await DBUtils.insert_new(org_db)
 
             for s_n in obj.social_networks:
                 await soc_net_repos.add(s_n)

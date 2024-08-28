@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.schedule.schemas import LoadList
+from src.schedule.schemas import LoadList, LoadListInput
 from src.schemas import IdSchema
 from typing import Optional, List
 
@@ -14,7 +14,7 @@ class LoadListStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: LoadList) -> IdSchema:
+    async def add(self, obj: LoadListInput) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class LoadListStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: LoadList) -> None:
+    async def edit(self, obj: LoadListInput) -> None:
         pass

@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import ScheduleList
+from src.schedule.schemas import ScheduleList, ScheduleListInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleListStore
 from src.utils import DBUtils
@@ -17,8 +17,8 @@ class ScheduleListRepos(ScheduleListStore):
                 selectinload(ScheduleListDB.load_list)
             )
             query_result = await session.execute(query)
-            if query_result:
-                schedule_list_db = query_result.scalar()
+            schedule_list_db = query_result.scalar()
+            if schedule_list_db:
                 load_list = await load_list_repos.get(schedule_list_db.load_list.id)
                 result = ScheduleList(
                     id=schedule_list_db.id,
@@ -34,15 +34,14 @@ class ScheduleListRepos(ScheduleListStore):
 
     async def get_all(self) -> List[ScheduleList]:
         result: List[ScheduleList] = []
-        ids: List[int] = DBUtils.select_all_id(ScheduleListDB)
+        ids: List[int] = await DBUtils.select_all_id(ScheduleListDB)
         for id in ids:
             result.append(
                 await self.get(id)
             )
         return result
 
-    async def add(self, obj: ScheduleList) -> IdSchema:
-        await load_list_repos.add(obj.load_list)
+    async def add(self, obj: ScheduleListInput) -> IdSchema:
         obj_db = ScheduleListDB(
             id=obj.id,
             name=obj.name,
@@ -65,7 +64,7 @@ class ScheduleListRepos(ScheduleListStore):
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ScheduleListDB, id)
 
-    async def edit(self, obj: ScheduleList) -> None:
+    async def edit(self, obj: ScheduleListInput) -> None:
         await self.delete(obj.id)
         await self.add(obj)
 

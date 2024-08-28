@@ -1,5 +1,5 @@
 from src.schedule.stores import TeacherLoadListStore
-from src.schedule.schemas import TeacherLoadList
+from src.schedule.schemas import TeacherLoadList, TeacherLoadListInput
 from src.schemas import IdSchema
 from src.schedule.models import TeacherLoadListDB
 from typing import Optional, List
@@ -11,23 +11,31 @@ from sqlalchemy import select, and_
 
 class TeacherLoadListRepos(TeacherLoadListStore):
     async def get(id: int) -> Optional[TeacherLoadList]:
-        pass
+        teacher_load_list_db: Optional[TeacherLoadListDB] = await DBUtils.select_by_id(TeacherLoadListDB, id)
+        if teacher_load_list_db:
+            result = TeacherLoadList(
+                id=teacher_load_list_db.id,
+                hours=teacher_load_list_db.hours,
+                teacher=await teacher_repos.get(id=teacher_load_list_db.teacher_id)
+            )
+        else:
+            result = None
+        return result
 
     async def get_all(self) -> List[TeacherLoadList]:
-        ids = await DBUtils.select_all_id(TeacherLoadList)
-        result: List[TeacherLoadList]
+        ids = await DBUtils.select_all_id(TeacherLoadListDB)
+        result: List[TeacherLoadList] = []
         for id in ids:
             result.append(
                 await self.get(id)
             )
         return result
 
-    async def add(self, obj: TeacherLoadList, load_list_id: int) -> IdSchema:
-        teacher_id = await teacher_repos.add(obj.teacher)
+    async def add(self, obj: TeacherLoadListInput) -> IdSchema:
         obj_db = TeacherLoadListDB(
             id=obj.id,
-            load_list_id=load_list_id,
-            teacher_id=teacher_id,
+            load_list_id=obj.load_list.id,
+            teacher_id=obj.teacher.id,
             hours=obj.hours
         )
         await DBUtils.insert_new(obj_db)
@@ -35,8 +43,8 @@ class TeacherLoadListRepos(TeacherLoadListStore):
             query = select(TeacherLoadListDB).where(
                 and_(
                     TeacherLoadListDB.hours == obj.hours,
-                    TeacherLoadListDB.load_list_id == load_list_id,
-                    TeacherLoadListDB.teacher_id == teacher_id
+                    TeacherLoadListDB.load_list_id == obj.load_list.id,
+                    TeacherLoadListDB.teacher_id == obj.teacher.id
                 )
             )
             query_result = await session.execute(query)
@@ -46,9 +54,9 @@ class TeacherLoadListRepos(TeacherLoadListStore):
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(TeacherLoadListDB, id)
 
-    async def edit(self, obj: TeacherLoadList, load_list_id: int) -> None:
+    async def edit(self, obj: TeacherLoadListInput) -> None:
         await self.delete(obj.id)
-        await self.add(obj, load_list_id=load_list_id)
+        await self.add(obj)
 
 
 teacher_load_list_repos = TeacherLoadListRepos()

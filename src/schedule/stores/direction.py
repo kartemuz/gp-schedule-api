@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from src.schedule.schemas import Direction
+from src.schedule.schemas import Direction, DirectionInput
 from src.schemas import IdSchema
 
 
 class DirectionStore(ABC):
+    @abstractmethod
+    async def get_by_name(self, name: str) -> Optional[Direction]:
+        pass
+
     @abstractmethod
     async def get(self, id: int) -> Optional[Direction]:
         pass
@@ -14,7 +18,7 @@ class DirectionStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Direction) -> IdSchema:
+    async def add(self, obj: DirectionInput) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +26,5 @@ class DirectionStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: Direction) -> None:
+    async def edit(self, obj: DirectionInput) -> None:
         pass

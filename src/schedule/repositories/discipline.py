@@ -7,6 +7,7 @@ from src.utils import DBUtils
 
 
 class DisciplineRepos(DisciplineStore):
+
     async def get(self, id: int) -> Optional[Discipline]:
         obj_db: Optional[Discipline] = await DBUtils.select_by_id(DisciplineDB, id)
         if obj_db:

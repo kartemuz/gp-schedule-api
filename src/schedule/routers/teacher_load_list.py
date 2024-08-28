@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import TeacherLoadList
+from src.schedule.schemas import TeacherLoadList, TeacherLoadListInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -30,20 +30,18 @@ async def get_teacher_load_list(
 
 @teacher_load_list_router.post('/add')
 async def add_teacher_load_list(
-    teacher_load_list: TeacherLoadList,
-    load_list_id: int,
+    teacher_load_list: TeacherLoadListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
-    return await schedule_service.teacher_load_list_store.add(teacher_load_list, load_list_id=load_list_id)
+    return await schedule_service.teacher_load_list_store.add(teacher_load_list)
 
 
 @teacher_load_list_router.post('/edit')
 async def edit_teacher_load_list(
-    teacher_load_list: TeacherLoadList,
-    load_list_id: int,
+    teacher_load_list: TeacherLoadListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
-    await schedule_service.teacher_load_list_store.edit(teacher_load_list, load_list_id=load_list_id)
+    await schedule_service.teacher_load_list_store.edit(teacher_load_list)
 
 
 @teacher_load_list_router.get('/delete')

@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from src.user.schemas import Action, Entity, Opportunity, Role, User
+from src.user.schemas import RoleInput, UserInput, Action, Entity, Opportunity, Role, User
 from typing import List, Optional
 
 
@@ -47,7 +47,7 @@ class OpportunityStore(ABC):
 
 class RoleStore(ABC):
     @abstractmethod
-    async def add(self, obj: Role) -> None:
+    async def add(self, obj: RoleInput) -> None:
         pass
 
     @abstractmethod
@@ -55,7 +55,7 @@ class RoleStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: Role) -> None:
+    async def edit(self, obj: RoleInput) -> None:
         pass
 
     @abstractmethod
@@ -69,7 +69,7 @@ class RoleStore(ABC):
 
 class UserStore(ABC):
     @abstractmethod
-    async def add(self, obj: User) -> None:
+    async def add(self, obj: UserInput) -> None:
         pass
 
     @abstractmethod
@@ -77,7 +77,7 @@ class UserStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: User) -> None:
+    async def edit(self, obj: UserInput) -> None:
         pass
 
     @abstractmethod

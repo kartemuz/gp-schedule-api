@@ -7,6 +7,7 @@ from src.constants import DBConstants
 class OrgDB(BaseDB):
     __tablename__ = 'organization'
     name: Mapped[str_pk]
+    full_name: Mapped[str]
     address: Mapped[str] = mapped_column(
         String(DBConstants.SHORT_STRING_LENGTH))
     phone: Mapped[str] = mapped_column(String(DBConstants.SHORT_STRING_LENGTH))

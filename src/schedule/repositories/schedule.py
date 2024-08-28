@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import Schedule
+from src.schedule.schemas import Schedule, ScheduleInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleStore
 from src.schedule.models import ScheduleDB
@@ -19,8 +19,8 @@ class ScheduleRepos(ScheduleStore):
         async with session_factory() as session:
             query = select(ScheduleDB).where(ScheduleDB.id == id)
             query_result = await session.execute(query)
-            if query_result:
-                schedule_db = query_result.scalar()
+            schedule_db = query_result.scalar()
+            if schedule_db:
                 result = Schedule(
                     id=schedule_db.id,
                     date_=schedule_db.date_,
@@ -38,7 +38,7 @@ class ScheduleRepos(ScheduleStore):
 
     async def get_all(self) -> List[Schedule]:
         result: List[Schedule] = []
-        ids: List[int] = DBUtils.select_all_id(ScheduleDB)
+        ids: List[int] = await DBUtils.select_all_id(ScheduleDB)
         for id in ids:
             result.append(
                 await self.get(id)

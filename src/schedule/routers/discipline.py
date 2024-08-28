@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from typing import Optional, List
+from typing import Optional, List, Set
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
 from src.schedule.schemas import Discipline
@@ -15,11 +15,22 @@ discipline_router = APIRouter(
 
 @discipline_router.get('/get')
 async def get_discipline(
-    id: Optional[int] = None
+    id: Optional[int] = None,
+    flow_id: Optional[int] = None
 ) -> Discipline | List[Discipline]:
     if id:
         result: Discipline = await schedule_service.discipline_store.get(id)
         if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    elif flow_id:
+        result: List[Discipline] = []
+        flow = await schedule_service.flow_store.get(flow_id)
+        if flow:
+            for gr in flow.groups:
+                for disc in gr.direction.disciplines:
+                    if disc not in result:
+                        result.append(disc)
+        else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         result: List[Discipline] = await schedule_service.discipline_store.get_all()

@@ -1,6 +1,6 @@
 from src.schedule.stores import FlowStore
 from typing import Optional, List
-from src.schedule.schemas import Flow, Group
+from src.schedule.schemas import Flow, Group, FlowInput
 from src.schemas import IdSchema
 from src.schedule.models import FlowDB, FlowGroupDB, GroupDB
 from sqlalchemy import select
@@ -23,8 +23,8 @@ class FlowRepos(FlowStore):
                 )
             )
             query_result = await session.execute(query)
-            if query_result:
-                flow_db = query_result.scalar()
+            flow_db = query_result.scalar()
+            if flow_db:
 
                 groups: List[Group] = []
                 for fl_gr_db in flow_db.flows_groups:
@@ -47,49 +47,35 @@ class FlowRepos(FlowStore):
         return result
 
     async def get_all(self) -> List[Flow]:
-        ids: List[int] = await DBUtils.select_all_id()
+        ids: List[int] = await DBUtils.select_all_id(FlowDB)
         result = []
         for id in ids:
             result.append(await self.get(id))
         return result
 
-    async def add(self, obj: Flow) -> IdSchema:
+    async def add(self, obj: FlowInput) -> IdSchema:
         flow_db = FlowDB(
             id=obj.id,
             name=obj.name
         )
         await DBUtils.insert_new(flow_db)
 
-        for gr in obj.groups:
-            await group_repos.add(gr)
-
         flow_db = await DBUtils.select_by_name(FlowDB, obj.name)
-        flow_id = flow_db.id
+        result = flow_db.id
 
-        async with session_factory() as session:
-            for gr in obj.groups:
-                query = select(GroupDB).where(
-                    GroupDB.number_group == gr.number_group
-                )
-                query_result = await session.execute(query)
-                gr_db = query_result.scalar()
+        for gr in obj.groups:
+            fl_gr_db = FlowGroupDB(
+                flow_id=result,
+                group_id=gr.id
+            )
+            await DBUtils.insert_new(fl_gr_db)
 
-                fl_gr_db = FlowGroupDB(
-                    flow_id=flow_id,
-                    group_id=gr_db.id
-                )
-                session.add(fl_gr_db)
-                try:
-                    await session.commit()
-                except IntegrityError:
-                    await session.rollback()
-
-        return flow_id
+        return result
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(FlowDB, id)
 
-    async def edit(self, obj: Flow) -> None:
+    async def edit(self, obj: FlowInput) -> None:
         await self.delete(obj.id)
         await self.add(obj)
 

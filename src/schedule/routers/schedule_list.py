@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import ScheduleList
+from src.schedule.schemas import ScheduleList, ScheduleListInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -30,7 +30,7 @@ async def get_schedule_list(
 
 @schedule_list_router.post('/add')
 async def add_schedule_list(
-    schedule_list: ScheduleList,
+    schedule_list: ScheduleListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
     return await schedule_service.schedule_list_store.add(schedule_list)
@@ -38,7 +38,7 @@ async def add_schedule_list(
 
 @schedule_list_router.post('/edit')
 async def edit_schedule_list(
-    schedule_list: ScheduleList,
+    schedule_list: ScheduleListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
     await schedule_service.schedule_list_store.edit(schedule_list)

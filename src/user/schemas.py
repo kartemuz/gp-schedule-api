@@ -1,6 +1,29 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
-from src.schemas import FullName
+from src.schemas import FullName, NameSchema
+
+
+class LoginSchema(BaseModel):
+    login: str
+
+
+class UserChangePassword(BaseModel):
+    login: str
+    hashed_password: str
+
+
+class UserInput(BaseModel):
+    role: NameSchema
+    login: str
+    email: EmailStr
+    hashed_password: str
+    full_name: FullName
+    active: bool
+
+
+class RoleInput(BaseModel):
+    name: NameSchema
+    opportunities: List[NameSchema]
 
 
 class Action(BaseModel):
@@ -29,12 +52,3 @@ class User(BaseModel):
     hashed_password: bytes
     full_name: Optional[FullName]
     active: bool
-
-
-class UserEditSchema(BaseModel):
-    role: Optional[Role] = None
-    login: str
-    email: Optional[EmailStr] = None
-    hashed_password: Optional[bytes] = None
-    full_name: Optional[FullName] = None
-    active: Optional[None] = None

@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import Change
+from src.schedule.schemas import Change, ChangeInput
 from src.schemas import IdSchema
 from src.schedule.stores import ChangeStore
 from src.schedule.models import ChangeDB
@@ -7,7 +7,6 @@ from src.utils import DBUtils
 from src.database import session_factory
 from sqlalchemy import select
 from src.schedule.repositories.teacher import teacher_repos
-from src.schedule.repositories.schedule_teacher import schedule_teacher_repos
 
 
 class ChangeRepos(ChangeStore):
@@ -25,16 +24,14 @@ class ChangeRepos(ChangeStore):
 
     async def get_all(self) -> List[Change]:
         result: List[Change] = []
-        ids: List[int] = DBUtils.select_all_id(ChangeDB)
+        ids: List[int] = await DBUtils.select_all_id(ChangeDB)
         for id in ids:
             result.append(
                 await self.get(id)
             )
         return result
 
-    async def add(self, obj: Change) -> IdSchema:
-        await teacher_repos.add(obj.teacher)
-        await schedule_teacher_repos.add(obj.schedule_teacher)
+    async def add(self, obj: ChangeInput) -> IdSchema:
 
         obj_db = ChangeDB(
             id=obj.id,
@@ -59,6 +56,6 @@ class ChangeRepos(ChangeStore):
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ChangeDB, id)
 
-    async def edit(self, obj: Change) -> None:
+    async def edit(self, obj: ChangeInput) -> None:
         await self.delete(obj.id)
         await self.add(obj)

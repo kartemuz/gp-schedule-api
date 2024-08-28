@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Optional, List, Final
-from src.user.schemas import User, Opportunity, Role, UserEditSchema
+from src.user.schemas import RoleInput, UserInput, User, Opportunity, Role, UserChangePassword
 from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils
+from src.schemas import NameSchema
 
 
 tags: Final = ['user']
@@ -12,6 +13,28 @@ user_router = APIRouter(
     prefix='/user',
     tags=tags,
 )
+
+
+@user_router.post('/change_password')
+async def change_password(
+    user_change_password: UserChangePassword,
+    auth_user: User = Depends(get_auth_active_user)
+) -> None:
+    user = await user_service.user_store.get(user_change_password.login)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
+    user_input = UserInput(
+        login=user.login,
+        email=user.email,
+        hashed_password=user.hashed_password,
+        full_name=user.full_name,
+        active=user.active,
+        role=NameSchema(
+            name=user.role.name
+        )
+    )
+    await user_service.user_store.edit(user_input)
 
 
 @user_router.get('/get')
@@ -26,27 +49,14 @@ async def get_user(login: Optional[str] = None, auth_user: User = Depends(get_au
 
 
 @user_router.post('/add')
-async def add_user(user: User, auth_user: User = Depends(get_auth_active_user)) -> None:
+async def add_user(user: UserInput, auth_user: User = Depends(get_auth_active_user)) -> None:
     user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
     await user_service.user_store.add(user)
 
 
 @user_router.post('/edit')
-async def edit_user(user_edit_schema: UserEditSchema, auth_user: User = Depends(get_auth_active_user)) -> None:
+async def edit_user(user: UserInput, auth_user: User = Depends(get_auth_active_user)) -> None:
     '''The client transmits only the changed data, login is required'''
-    user = await user_service.user_store.get(login=user_edit_schema.login)
-    if user_edit_schema.hashed_password:
-        user.hashed_password = PasswordUtils.hash_password(
-            user_edit_schema.hashed_password)
-    if user_edit_schema.active is not None:
-        user.active = user_edit_schema.active
-    if user_edit_schema.email:
-        user.email = user_edit_schema.email
-    if user_edit_schema.full_name:
-        user.full_name = user_edit_schema.full_name
-    if user_edit_schema.role:
-        user.role = user_edit_schema.role
-
     await user_service.user_store.edit(user)
 
 
@@ -90,12 +100,12 @@ async def get_role(name: Optional[str] = None, auth_user: User = Depends(get_aut
 
 
 @role_router.post('/add')
-async def add_role(role: Role, auth_user: User = Depends(get_auth_active_user)) -> None:
+async def add_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> None:
     await user_service.role_store.add(role)
 
 
 @role_router.post('/edit')
-async def edit_role(role: Role, auth_user: User = Depends(get_auth_active_user)) -> None:
+async def edit_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> None:
     await user_service.role_store.edit(role)
 
 

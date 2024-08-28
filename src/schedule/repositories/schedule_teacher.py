@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import ScheduleTeacher
+from src.schedule.schemas import ScheduleTeacher, ScheduleTeacherInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleTeacherStore
 from src.schedule.models import ScheduleTeacherDB
@@ -17,7 +17,7 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
             result = ScheduleTeacher(
                 id=schedule_teacher_db.id,
                 teacher=await teacher_repos.get(schedule_teacher_db.teacher_id),
-                schedule=await teacher_repos.get(schedule_teacher_db.schedule_id)
+                schedule=await schedule_repos.get(schedule_teacher_db.schedule_id)
             )
         else:
             result = None
@@ -25,16 +25,14 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
 
     async def get_all(self) -> List[ScheduleTeacher]:
         result: List[ScheduleTeacher] = []
-        ids: List[int] = DBUtils.select_all_id(ScheduleTeacherDB)
+        ids: List[int] = await DBUtils.select_all_id(ScheduleTeacherDB)
         for id in ids:
             result.append(
                 await self.get(id)
             )
         return result
 
-    async def add(self, obj: ScheduleTeacher) -> IdSchema:
-        await teacher_repos.add(obj.teacher)
-        await schedule_repos.add(obj.schedule)
+    async def add(self, obj: ScheduleTeacherInput) -> IdSchema:
         obj_db = ScheduleTeacherDB(
             id=obj.id,
             teacher_id=obj.teacher.id,
@@ -58,7 +56,7 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ScheduleTeacherDB, id)
 
-    async def edit(self, obj: ScheduleTeacher) -> None:
+    async def edit(self, obj: ScheduleTeacherInput) -> None:
         await self.delete(obj.id)
         await self.add(obj)
 

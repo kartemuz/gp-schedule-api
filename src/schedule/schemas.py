@@ -2,6 +2,82 @@ from pydantic import BaseModel
 from typing import List, Optional
 from src.schemas import FullName
 from datetime import date, time
+from src.schemas import IdSchema
+from src.user.schemas import LoginSchema
+
+
+class FreeObjectInput(BaseModel):
+    time_start: time
+    time_end: time
+    date_: date
+    schedule_list_id: int
+
+
+class DirectionInput(BaseModel):
+    id: Optional[int]
+    name: str
+    id_sys: int
+    type_direction: IdSchema
+    hours: int
+    disciplines: List[IdSchema]
+
+
+class GroupInput(BaseModel):
+    id: Optional[int]
+    number_group: int
+    direction: IdSchema
+
+
+class FlowInput(BaseModel):
+    id: Optional[int]
+    name: str
+    groups: List[IdSchema]
+
+
+class LoadListInput(BaseModel):
+    id: Optional[int]
+    name: str
+    user: LoginSchema
+
+
+class ScheduleListInput(BaseModel):
+    id: Optional[int]
+    name: str
+    date_start: date
+    date_ent: date
+    active: bool
+    load_list: IdSchema
+
+
+class ChangeInput(BaseModel):
+    id: Optional[int]
+    teacher: IdSchema
+    schedule_teacher: IdSchema
+
+
+class TeacherLoadListInput(BaseModel):
+    id: Optional[int]
+    teacher: IdSchema
+    load_list: IdSchema
+    hours: int
+
+
+class ScheduleInput(BaseModel):
+    id: Optional[int]
+    date_: date
+    time_start: time
+    time_end: time
+    type_lesson: IdSchema
+    flow: IdSchema
+    discipline: IdSchema
+    room: IdSchema
+    schedule_list: IdSchema
+
+
+class ScheduleTeacherInput(BaseModel):
+    id: Optional[int]
+    teacher: IdSchema
+    schedule: IdSchema
 
 
 class Discipline(BaseModel):

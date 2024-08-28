@@ -10,3 +10,7 @@ class FullName(BaseModel):
 
 class IdSchema(BaseModel):
     id: int
+
+
+class NameSchema(BaseModel):
+    name: str

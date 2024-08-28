@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Room
+from src.schedule.schemas import Room, FreeObjectInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -12,6 +12,13 @@ room_router = APIRouter(
     prefix='/room',
     tags=ScheduleConstants.TAGS
 )
+
+
+@room_router.post('/get_free')
+async def get_free_room(
+    data: FreeObjectInput
+) -> List[Room]:
+    pass
 
 
 @room_router.get('/get')

@@ -51,12 +51,12 @@ class DirectionDB(BaseDB):
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
-    disciplines_directions: Mapped[List['DisciplineDirection']] = relationship(
+    disciplines_directions: Mapped[List['DisciplineDirectionDB']] = relationship(
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
 
-class DisciplineDirection(BaseDB):
+class DisciplineDirectionDB(BaseDB):
     __tablename__ = 'discipline_direction'
     id: Mapped[int_pk]
     discipline_id: Mapped[int] = mapped_column(

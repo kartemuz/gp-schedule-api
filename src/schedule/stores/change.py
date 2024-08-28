@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from src.schedule.schemas import Change
+from src.schedule.schemas import Change, ChangeInput
 from src.schemas import IdSchema
 
 
@@ -14,7 +14,7 @@ class ChangeStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Change) -> IdSchema:
+    async def add(self, obj: ChangeInput) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class ChangeStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: Change) -> None:
+    async def edit(self, obj: ChangeInput) -> None:
         pass

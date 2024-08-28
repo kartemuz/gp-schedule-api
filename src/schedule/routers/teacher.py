@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Teacher
+from src.schedule.schemas import Teacher, FreeObjectInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -11,6 +11,13 @@ teacher_router = APIRouter(
     prefix='/teacher',
     tags=ScheduleConstants.TAGS
 )
+
+
+@teacher_router.post('/get_free')
+async def get_free_teacher(
+    data: FreeObjectInput
+) -> List[Teacher]:
+    pass
 
 
 @teacher_router.get('/get')

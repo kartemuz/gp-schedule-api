@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Direction
+from src.schedule.schemas import Direction, DirectionInput, TypeDirection, Discipline
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -16,31 +16,61 @@ direction_router = APIRouter(
 
 @direction_router.get('/get')
 async def get_direction(
-    id: Optional[int] = None
+    id: Optional[int] = None,
+    name: Optional[str] = None
 ) -> Direction | List[Direction]:
     if id:
         result: Direction = await schedule_service.direction_store.get(id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    elif name:
+        result: Direction = await schedule_service.direction_store.get_by_name(name)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         result: List[Direction] = await schedule_service.direction_store.get_all()
+
     return result
 
 
 @direction_router.post('/add')
 async def add_direction(
-    direction: Direction,
+    direction: DirectionInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
+    # direction = Direction(
+    #     id=direction_request.id,
+    #     name=direction_request.name,
+    #     id_sys=direction_request.id_sys,
+    #     type_direction=TypeDirection(
+    #         id=direction_request.type_direction.id
+    #     ),
+    #     hours=direction_request.hours,
+    #     disciplines=[
+    #         Discipline(id=disc.id) for disc in direction_request.disciplines
+    #     ]
+    # )
     return await schedule_service.direction_store.add(direction)
 
 
 @direction_router.post('/edit')
 async def edit_direction(
-    direction: Direction,
+    direction: DirectionInput,
     auth_user: User = Depends(get_auth_active_user)
-) -> None:
-    await schedule_service.direction_store.edit(direction)
+) -> IdSchema:
+    # direction = Direction(
+    #     id=direction.id,
+    #     name=direction.name,
+    #     id_sys=direction.id_sys,
+    #     type_direction=TypeDirection(
+    #         id=direction.type_direction.id
+    #     ),
+    #     hours=direction.hours,
+    #     disciplines=[
+    #         Discipline(id=disc.id) for disc in direction.disciplines
+    #     ]
+    # )
+    return await schedule_service.direction_store.edit(direction)
 
 
 @direction_router.get('/delete')

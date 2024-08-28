@@ -1,8 +1,8 @@
 from src.schedule.stores import DirectionStore
 from typing import Optional, List
-from src.schedule.schemas import Direction, Discipline, TypeDirection
+from src.schedule.schemas import Direction, Discipline, TypeDirection, DirectionInput
 from src.schemas import IdSchema
-from src.schedule.models import DirectionDB, DisciplineDirection
+from src.schedule.models import DirectionDB, DisciplineDirectionDB
 from sqlalchemy import select
 from src.database import session_factory
 from sqlalchemy.orm import selectinload
@@ -13,20 +13,59 @@ from src.schedule.repositories.type_direction import type_direction_repos
 
 
 class DirectionRepos(DirectionStore):
+    async def get_by_name(self, name: str) -> Optional[Direction]:
+        async with session_factory() as session:
+            query = select(DirectionDB).where(DirectionDB.name == name).options(
+                selectinload(
+                    DirectionDB.disciplines_directions
+                ).selectinload(
+                    DisciplineDirectionDB.discipline
+                ),
+
+                selectinload(DirectionDB.type_direction)
+            )
+            query_result = await session.execute(query)
+            obj_db = query_result.scalar()
+            if obj_db:
+                disciplines: List[Discipline] = []
+                for disc_dir in obj_db.disciplines_directions:
+                    disciplines.append(
+                        Discipline(
+                            id=disc_dir.discipline.id,
+                            name=disc_dir.discipline.name,
+                            lecture_hours=disc_dir.discipline.lecture_hours,
+                            practice_hours=disc_dir.discipline.practice_hours
+                        )
+                    )
+                result = Direction(
+                    id=obj_db.id,
+                    name=obj_db.name,
+                    id_sys=obj_db.id_sys,
+                    hours=obj_db.hours,
+                    type_direction=TypeDirection(
+                        id=obj_db.type_direction.id,
+                        name=obj_db.type_direction.name
+                    ),
+                    disciplines=disciplines
+                )
+            else:
+                result = None
+        return result
+
     async def get(self, id: int) -> Optional[Direction]:
         async with session_factory() as session:
             query = select(DirectionDB).where(DirectionDB.id == id).options(
                 selectinload(
                     DirectionDB.disciplines_directions
                 ).selectinload(
-                    DisciplineDirection.discipline
+                    DisciplineDirectionDB.discipline
                 ),
 
                 selectinload(DirectionDB.type_direction)
             )
             query_result = await session.execute(query)
-            if query_result:
-                obj_db = query_result.scalar()
+            obj_db = query_result.scalar()
+            if obj_db:
                 disciplines: List[Discipline] = []
                 for disc_dir in obj_db.disciplines_directions:
                     disciplines.append(
@@ -59,10 +98,10 @@ class DirectionRepos(DirectionStore):
             result.append(await self.get(id))
         return result
 
-    async def add(self, obj: Direction) -> IdSchema:
-        for disc in obj.disciplines:
-            await discipline_repos.add(disc)
-        await type_direction_repos.add(obj.type_direction)
+    async def add(self, obj: DirectionInput) -> IdSchema:
+        # for disc in obj.disciplines:
+        #     await discipline_repos.add(disc)
+        # await type_direction_repos.add(obj.type_direction)
         obj_db = DirectionDB(
             id=obj.id,
             name=obj.name,
@@ -75,12 +114,21 @@ class DirectionRepos(DirectionStore):
         async with session_factory() as session:
             query = select(DirectionDB).where(DirectionDB.name == obj.name)
             query_result = await session.execute(query)
-            return IdSchema(id=query_result.scalar().id)
+            result = IdSchema(id=query_result.scalar().id)
+
+        for disc in obj.disciplines:
+            disc_dir_db = DisciplineDirectionDB(
+                discipline_id=disc.id,
+                direction_id=result
+            )
+            await DBUtils.insert_new(disc_dir_db)
+
+        return result
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(DirectionDB, id)
 
-    async def edit(self, obj: Direction) -> None:
+    async def edit(self, obj: DirectionInput) -> None:
         await self.delete(obj.id)
         await self.add(obj)
 

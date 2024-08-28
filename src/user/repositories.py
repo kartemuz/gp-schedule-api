@@ -1,4 +1,4 @@
-from src.user.schemas import Action, Entity, Opportunity, Role, User
+from src.user.schemas import RoleInput, UserInput, Action, Entity, Opportunity, Role, User
 from src.user.stores import (
     ActionStore,
     EntityStore,
@@ -144,26 +144,18 @@ class OpportunityRepository(OpportunityStore):
 
 
 class RoleRepository(RoleStore):
-    async def add(self, obj: Role) -> None:
+    async def add(self, obj: RoleInput) -> None:
+        role_db: RoleDB = RoleDB(
+            name=obj.name
+        )
+        await DBUtils.insert_new(role_db)
+
         for op in obj.opportunities:
-            await OpportunityRepository().add(op)
-
-        async with session_factory() as session:
-            role_db: RoleDB = RoleDB(
-                name=obj.name
+            role_opportunity_db: RoleOpportunityDB = RoleOpportunityDB(
+                role_name=obj.name,
+                opportunity_name=op.name
             )
-            session.add(role_db)
-            for op in obj.opportunities:
-                role_opportunity_db: RoleOpportunityDB = RoleOpportunityDB(
-                    role_name=obj.name,
-                    opportunity_name=op.name
-                )
-                session.add(role_opportunity_db)
-            try:
-                await session.commit()
-
-            except IntegrityError:
-                await session.rollback()
+            await DBUtils.insert_new(role_opportunity_db)
 
     async def get(self, name: str) -> Optional[Role]:
         async with session_factory() as session:
@@ -196,7 +188,7 @@ class RoleRepository(RoleStore):
                 result = None
         return result
 
-    async def edit(self, obj: Role) -> None:
+    async def edit(self, obj: RoleInput) -> None:
         await self.delete(name=obj.name)
         await self.add(obj=obj)
 
@@ -213,29 +205,17 @@ class RoleRepository(RoleStore):
 
 class UserRepository(UserStore):
 
-    async def add(self, obj: User) -> None:
-        if obj.role:
-            await RoleRepository().add(obj=obj.role)
-            role_name = obj.role.name
-        else:
-            role_name = None
-        async with session_factory() as session:
-            user_db = UserDB(
-                login=obj.login,
-                email=obj.email,
-                hashed_password=obj.hashed_password,
-                surname=obj.full_name.surname,
-                name=obj.full_name.name,
-                patronymic=obj.full_name.patronymic,
-                role_name=role_name
-            )
-
-            session.add(user_db)
-            try:
-                await session.commit()
-
-            except IntegrityError:
-                await session.rollback()
+    async def add(self, obj: UserInput) -> None:
+        user_db = UserDB(
+            login=obj.login,
+            email=obj.email,
+            hashed_password=obj.hashed_password,
+            surname=obj.full_name.surname,
+            name=obj.full_name.name,
+            patronymic=obj.full_name.patronymic,
+            role_name=obj.role.name
+        )
+        await DBUtils.insert_new(user_db)
 
     async def get(self, login: str) -> Optional[User]:
         async with session_factory() as session:
@@ -263,7 +243,7 @@ class UserRepository(UserStore):
                 result = None
         return result
 
-    async def edit(self, obj: User) -> None:
+    async def edit(self, obj: UserInput) -> None:
         await self.delete(login=obj.login)
         await self.add(obj=obj)
 

@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from src.schedule.schemas import Group
+from src.schedule.schemas import Group, GroupInput
 from src.schemas import IdSchema
 
 
 class GroupStore(ABC):
+
+    @abstractmethod
+    async def get_by_number_group(self, number_group: str) -> Optional[Group]:
+        pass
+
     @abstractmethod
     async def get(self, id: int) -> Optional[Group]:
         pass
@@ -14,7 +19,7 @@ class GroupStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: Group) -> IdSchema:
+    async def add(self, obj: GroupInput) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +27,5 @@ class GroupStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: Group) -> None:
+    async def edit(self, obj: GroupInput) -> None:
         pass

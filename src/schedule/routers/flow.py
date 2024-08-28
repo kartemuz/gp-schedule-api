@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Flow
+from src.schedule.schemas import Flow, FlowInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -29,7 +29,7 @@ async def get_flow(
 
 @flow_router.post('/add')
 async def add_flow(
-    flow: Flow,
+    flow: FlowInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
     return await schedule_service.flow_store.add(flow)
@@ -37,7 +37,7 @@ async def add_flow(
 
 @flow_router.post('/edit')
 async def edit_flow(
-    flow: Flow,
+    flow: FlowInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
     await schedule_service.flow_store.edit(flow)
