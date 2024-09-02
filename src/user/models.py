@@ -18,7 +18,14 @@ class EntityDB(BaseDB):
 
 class OpportunityDB(BaseDB):
     __tablename__ = 'opportunity'
-    name: Mapped[str_pk]
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(
+        String(
+            DBConstants.SHORT_STRING_LENGTH
+        ),
+        nullable=False,
+        unique=True
+    )
     action_name: Mapped[str] = mapped_column(
         ForeignKey(DBUtils.get_attribute_path(ActionDB, 'name'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=False
     )
@@ -34,7 +41,14 @@ class OpportunityDB(BaseDB):
 
 class RoleDB(BaseDB):
     __tablename__ = 'role'
-    name: Mapped[str_pk]
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(
+        String(
+            DBConstants.SHORT_STRING_LENGTH
+        ),
+        unique=True,
+        nullable=False
+    )
 
     role_opportunities: Mapped[List['RoleOpportunityDB']] = relationship(
         cascade=DBConstants.RELATIONSHIP_CASCADE, lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
@@ -44,11 +58,11 @@ class RoleDB(BaseDB):
 class RoleOpportunityDB(BaseDB):
     __tablename__ = 'role_opportunity'
     id: Mapped[int_pk]
-    role_name: Mapped[str] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(RoleDB, 'name'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=False
+    role_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(RoleDB, 'id'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=False
     )
-    opportunity_name: Mapped[str] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(OpportunityDB, 'name'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=False
+    opportunity_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(OpportunityDB, 'id'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=False
     )
 
     opportunity: Mapped['OpportunityDB'] = relationship(
@@ -70,8 +84,8 @@ class UserDB(BaseDB):
         String(DBConstants.SHORT_STRING_LENGTH), nullable=True)
     patronymic: Mapped[str] = mapped_column(
         String(DBConstants.SHORT_STRING_LENGTH), nullable=True)
-    role_name: Mapped[str] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(RoleDB, 'name'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=True
+    role_id: Mapped[int] = mapped_column(
+        ForeignKey(DBUtils.get_attribute_path(RoleDB, 'id'), ondelete=DBConstants.ONDELETE_CASCADE), nullable=True
     )
 
     role: Mapped['RoleDB'] = relationship(

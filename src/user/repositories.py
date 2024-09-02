@@ -19,11 +19,11 @@ from src.user.models import (
 from sqlalchemy.exc import IntegrityError
 from src.utils import DBUtils
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from src.schemas import FullName
 
 
-class ActionRepository(ActionStore):
+class ActionRepos(ActionStore):
 
     async def add(self, obj: Action) -> None:
         action_db = ActionDB(name=obj.name)
@@ -55,7 +55,10 @@ class ActionRepository(ActionStore):
         return result
 
 
-class EntityRepository(EntityStore):
+action_repos = ActionRepos()
+
+
+class EntityRepos(EntityStore):
     async def add(self, obj: Entity) -> None:
         entity_db = EntityDB(name=obj.name)
         async with session_factory() as session:
@@ -84,37 +87,35 @@ class EntityRepository(EntityStore):
         return result
 
 
-class OpportunityRepository(OpportunityStore):
-    async def add(self, obj: Opportunity) -> None:
+entity_repos = EntityRepos()
+
+
+class OpportunityRepos(OpportunityStore):
+    async def add(self, obj: Opportunity) -> int:
+        # await action_repos.add(obj.action)
+        # await entity_repos.add(obj.entity)
+
+        opportunity_db: OpportunityDB = OpportunityDB(
+            id=obj.id,
+            name=obj.name,
+            action_name=obj.action.name,
+            entity_name=obj.entity.name
+        )
+
+        await DBUtils.insert_new(opportunity_db)
+        return await DBUtils.select_id_by_name(OpportunityDB, obj.name)
+
+    async def get(self, id: int) -> Optional[Opportunity]:
         async with session_factory() as session:
-            await ActionRepository().add(Action)
-            await EntityRepository().add(Entity)
-
-            opportunity_db: OpportunityDB = OpportunityDB(
-                name=obj.name,
-                action_name=obj.action.name,
-                entity_name=obj.entity.name
-            )
-
-            session.add(opportunity_db)
-            try:
-                await session.commit()
-            except IntegrityError:
-                await session.rollback()
-
-    async def get(self, name: str) -> Optional[Opportunity]:
-        async with session_factory() as session:
-            query = select(OpportunityDB).where(OpportunityDB.name == name).options(
-                selectinload(OpportunityDB.action),
-                selectinload(OpportunityDB.entity)
-            )
+            query = select(OpportunityDB).where(OpportunityDB.id == id)
             query_result = await session.execute(query)
             if query_result:
                 opportunity_db = query_result.scalar()
                 result = Opportunity(
+                    id=opportunity_db.id,
                     name=opportunity_db.name,
-                    action=Action(name=opportunity_db.action.name),
-                    entity=Entity(name=opportunity_db.entity.name)
+                    action=await action_repos.get(opportunity_db.action_name),
+                    entity=await entity_repos.get(opportunity_db.entity_name)
                 )
             else:
                 result = None
@@ -122,65 +123,49 @@ class OpportunityRepository(OpportunityStore):
 
     async def get_all(self) -> List[Opportunity]:
         result: List[Opportunity] = []
-
-        async with session_factory() as session:
-            query = select(OpportunityDB).options(
-                selectinload(OpportunityDB.action),
-                selectinload(OpportunityDB.entity)
+        ids: List[int] = await DBUtils.select_all_id(OpportunityDB)
+        for id in ids:
+            result.append(
+                await self.get(id)
             )
-            query_result = await session.execute(query)
-            opportunities_db: List[OpportunityDB] = query_result.scalars()
-
-            for op_db in opportunities_db:
-                result.append(
-                    Opportunity(
-                        name=op_db.name,
-                        action=Action(name=op_db.action.name),
-                        entity=Entity(name=op_db.entity.name)
-                    )
-                )
-
         return result
 
 
-class RoleRepository(RoleStore):
-    async def add(self, obj: RoleInput) -> None:
+opportunity_repos = OpportunityRepos()
+
+
+class RoleRepos(RoleStore):
+    async def add(self, obj: RoleInput) -> int:
         role_db: RoleDB = RoleDB(
+            id=obj.id,
             name=obj.name
         )
         await DBUtils.insert_new(role_db)
 
         for op in obj.opportunities:
             role_opportunity_db: RoleOpportunityDB = RoleOpportunityDB(
-                role_name=obj.name,
-                opportunity_name=op.name
+                role_id=obj.id,
+                opportunity_id=op.id
             )
             await DBUtils.insert_new(role_opportunity_db)
+        return await DBUtils.select_id_by_name(RoleDB, obj.name)
 
-    async def get(self, name: str) -> Optional[Role]:
+    async def get(self, id: int) -> Optional[Role]:
         async with session_factory() as session:
-            query = select(RoleDB).where(RoleDB.name == name).options(
-                selectinload(RoleDB.role_opportunities).selectinload(
-                    RoleOpportunityDB.opportunity
-                )
+            query = select(RoleDB).where(RoleDB.id == id).options(
+                selectinload(RoleDB.role_opportunities)
             )
             query_result = await session.execute(query)
-
-            if query_result:
-                role_db = query_result.scalar()
-
+            role_db = query_result.scalar()
+            if role_db:
                 opportunities = []
-                if role_db:
-                    for op in role_db.role_opportunities:
-                        opportunities.append(
-                            Opportunity(
-                                name=op.opportunity.name,
-                                action=Action(name=op.opportunity.action.name),
-                                entity=Entity(name=op.opportunity.entity.name)
-                            )
-                        )
+                for op in role_db.role_opportunities:
+                    opportunities.append(
+                        await self.get(op.opportunity_id)
+                    )
 
                 result = Role(
+                    id=role_db.id,
                     name=role_db.name,
                     opportunities=opportunities
                 )
@@ -192,18 +177,21 @@ class RoleRepository(RoleStore):
         await self.delete(name=obj.name)
         await self.add(obj=obj)
 
-    async def delete(self, name: str) -> None:
-        await DBUtils.delete_by_name(model=RoleDB, name=name)
+    async def delete(self, id: int) -> None:
+        await DBUtils.delete_by_id(model=RoleDB, id=id)
 
     async def get_all(self) -> List[Role]:
         result: List[Role] = []
-        all_names = await DBUtils.select_all_name(RoleDB)
-        for name in all_names:
-            result.append(await self.get(name=name))
+        ids: List[int] = await DBUtils.select_all_name(RoleDB)
+        for id in ids:
+            result.append(await self.get(id=id))
         return result
 
 
-class UserRepository(UserStore):
+role_repos = RoleRepos()
+
+
+class UserRepos(UserStore):
 
     async def add(self, obj: UserInput) -> None:
         user_db = UserDB(
@@ -213,22 +201,23 @@ class UserRepository(UserStore):
             surname=obj.full_name.surname,
             name=obj.full_name.name,
             patronymic=obj.full_name.patronymic,
-            role_name=obj.role.name
+            role_id=obj.role.id
         )
         await DBUtils.insert_new(user_db)
+
+        # async with session_factory() as session:
+        #     query = select(UserDB.id).where(UserDB.login == obj.login)
+        #     query_result = await session.execute(query)
+        #     return query_result.scalar()
 
     async def get(self, login: str) -> Optional[User]:
         async with session_factory() as session:
             query = select(UserDB).where(UserDB.login == login)
             query_result = await session.execute(query)
-            if query_result:
-                user_db = query_result.scalar()
-                if user_db.role_name:
-                    role = await RoleRepository().get(name=user_db.role_name)
-                else:
-                    role = None
+            user_db = query_result.scalar()
+            if user_db:
                 result = User(
-                    role=role,
+                    role=await role_repos.get(user_db.role_id),
                     login=user_db.login,
                     email=user_db.email,
                     hashed_password=user_db.hashed_password,
@@ -268,3 +257,6 @@ class UserRepository(UserStore):
                 await self.get(login=login)
             )
         return result
+
+
+user_repos = UserRepos()

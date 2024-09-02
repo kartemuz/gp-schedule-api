@@ -7,11 +7,11 @@ from src.user.stores import (
 )
 
 from src.user.repositories import (
-    ActionRepository,
-    EntityRepository,
-    OpportunityRepository,
-    RoleRepository,
-    UserRepository
+    ActionRepos,
+    EntityRepos,
+    OpportunityRepos,
+    RoleRepos,
+    UserRepos
 )
 
 
@@ -38,9 +38,9 @@ class UserService:
 
 
 user_service = UserService(
-    action_repository=ActionRepository,
-    entity_repository=EntityRepository,
-    opportunity_repository=OpportunityRepository,
-    role_repository=RoleRepository,
-    user_repository=UserRepository
+    action_repository=ActionRepos,
+    entity_repository=EntityRepos,
+    opportunity_repository=OpportunityRepos,
+    role_repository=RoleRepos,
+    user_repository=UserRepos
 )

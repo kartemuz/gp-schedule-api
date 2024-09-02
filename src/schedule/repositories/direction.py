@@ -69,22 +69,14 @@ class DirectionRepos(DirectionStore):
                 disciplines: List[Discipline] = []
                 for disc_dir in obj_db.disciplines_directions:
                     disciplines.append(
-                        Discipline(
-                            id=disc_dir.discipline.id,
-                            name=disc_dir.discipline.name,
-                            lecture_hours=disc_dir.discipline.lecture_hours,
-                            practice_hours=disc_dir.discipline.practice_hours
-                        )
+                        await discipline_repos.get(disc_dir.discipline_id)
                     )
                 result = Direction(
                     id=obj_db.id,
                     name=obj_db.name,
                     id_sys=obj_db.id_sys,
                     hours=obj_db.hours,
-                    type_direction=TypeDirection(
-                        id=obj_db.type_direction.id,
-                        name=obj_db.type_direction.name
-                    ),
+                    type_direction=await type_direction_repos.get(obj_db.type_direction_id),
                     disciplines=disciplines
                 )
             else:
@@ -119,7 +111,7 @@ class DirectionRepos(DirectionStore):
         for disc in obj.disciplines:
             disc_dir_db = DisciplineDirectionDB(
                 discipline_id=disc.id,
-                direction_id=result
+                direction_id=result.id
             )
             await DBUtils.insert_new(disc_dir_db)
 

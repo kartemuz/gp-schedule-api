@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import BaseDB, int_pk
@@ -29,6 +29,12 @@ class TypeDirectionDB(BaseDB):
         nullable=False
     )
 
+    full_name: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH),
+        unique=True,
+        nullable=False
+    )
+
 
 class DirectionDB(BaseDB):
     __tablename__ = 'direction'
@@ -38,7 +44,10 @@ class DirectionDB(BaseDB):
         nullable=False,
         unique=True
     )
-    id_sys: Mapped[int]
+    id_sys: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH),
+        nullable=False
+    )
     type_direction_id: Mapped[int] = mapped_column(
         ForeignKey(
             DBUtils.get_attribute_path(TypeDirectionDB, 'id')
@@ -148,6 +157,10 @@ class TeacherDB(BaseDB):
         nullable=False
     )
     position: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH),
+        nullable=False
+    )
+    profile: Mapped[str] = mapped_column(
         String(DBConstants.SHORT_STRING_LENGTH),
         nullable=False
     )
@@ -277,6 +290,10 @@ class ScheduleDB(BaseDB):
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
+    schedule_teacher: Mapped['ScheduleTeacherDB'] = relationship(
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+    )
+
 
 class ScheduleTeacherDB(BaseDB):
     __tablename__ = 'schedule_teacher'
@@ -297,7 +314,7 @@ class ScheduleTeacherDB(BaseDB):
     teacher: Mapped['TeacherDB'] = relationship(
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
-    change: Mapped['ChangeDB'] = relationship(
+    change: Mapped[Optional['ChangeDB']] = relationship(
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 

@@ -27,20 +27,20 @@ async def get_change(
     return result
 
 
-@change_router.post('/add')
-async def add_change(
-    change: ChangeInput,
-    auth_user: User = Depends(get_auth_active_user)
-) -> IdSchema:
-    return await schedule_service.change_store.add(change)
+# @change_router.post('/add')
+# async def add_change(
+#     change: ChangeInput,
+#     auth_user: User = Depends(get_auth_active_user)
+# ) -> IdSchema:
+#     return await schedule_service.change_store.add(change)
 
 
-@change_router.post('/edit')
-async def edit_change(
-    change: ChangeInput,
-    auth_user: User = Depends(get_auth_active_user)
-) -> None:
-    await schedule_service.change_store.edit(change)
+# @change_router.post('/edit')
+# async def edit_change(
+#     change: ChangeInput,
+#     auth_user: User = Depends(get_auth_active_user)
+# ) -> None:
+#     await schedule_service.change_store.edit(change)
 
 
 @change_router.get('/delete')

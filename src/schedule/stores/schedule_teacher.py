@@ -14,7 +14,7 @@ class ScheduleTeacherStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: ScheduleTeacherInput) -> IdSchema:
+    async def add(self, obj: ScheduleTeacherInput, schedule_id: int) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class ScheduleTeacherStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: ScheduleTeacherInput) -> None:
+    async def edit(self, obj: ScheduleTeacherInput, schedule_id: int) -> None:
         pass

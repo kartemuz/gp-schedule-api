@@ -11,7 +11,7 @@ from sqlalchemy import select, and_
 
 class TeacherRepos(TeacherStore):
     async def get(self, id: int) -> Optional[Teacher]:
-        obj_db = await DBUtils.select_by_id(TeacherDB, id)
+        obj_db: Optional[TeacherDB] = await DBUtils.select_by_id(TeacherDB, id)
         if obj_db:
             result = Teacher(
                 id=obj_db.id,
@@ -20,7 +20,8 @@ class TeacherRepos(TeacherStore):
                     name=obj_db.name,
                     patronymic=obj_db.patronymic
                 ),
-                position=obj_db.position
+                position=obj_db.position,
+                profile=obj_db.profile
             )
         else:
             result = None
@@ -38,7 +39,8 @@ class TeacherRepos(TeacherStore):
                         name=obj_db.name,
                         patronymic=obj_db.patronymic
                     ),
-                    position=obj_db.position
+                    position=obj_db.position,
+                    profile=obj_db.profile
                 )
             )
         return result
@@ -49,7 +51,8 @@ class TeacherRepos(TeacherStore):
             surname=obj.full_name.surname,
             name=obj.full_name.name,
             patronymic=obj.full_name.patronymic,
-            position=obj.position
+            position=obj.position,
+            profile=obj.profile
         )
         await DBUtils.insert_new(obj_db)
         async with session_factory() as session:
@@ -58,7 +61,8 @@ class TeacherRepos(TeacherStore):
                     TeacherDB.surname == obj.full_name.surname,
                     TeacherDB.name == obj.full_name.name,
                     TeacherDB.patronymic == obj.full_name.patronymic,
-                    TeacherDB.position == obj.position
+                    TeacherDB.position == obj.position,
+                    TeacherDB.profile == obj.profile
                 )
             )
             query_result = await session.execute(query)

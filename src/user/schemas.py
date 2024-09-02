@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
-from src.schemas import FullName, NameSchema
+from src.schemas import FullName, NameSchema, IdSchema
 
 
 class LoginSchema(BaseModel):
@@ -13,7 +13,7 @@ class UserChangePassword(BaseModel):
 
 
 class UserInput(BaseModel):
-    role: NameSchema
+    role: IdSchema
     login: str
     email: EmailStr
     hashed_password: str
@@ -22,8 +22,9 @@ class UserInput(BaseModel):
 
 
 class RoleInput(BaseModel):
-    name: NameSchema
-    opportunities: List[NameSchema]
+    id: Optional[int]
+    name: str
+    opportunities: List[IdSchema]
 
 
 class Action(BaseModel):
@@ -35,12 +36,14 @@ class Entity(BaseModel):
 
 
 class Opportunity(BaseModel):
+    id: Optional[int]
     name: str
     action: Action
     entity: Entity
 
 
 class Role(BaseModel):
+    id: Optional[int]
     name: str
     opportunities: List[Opportunity]
 

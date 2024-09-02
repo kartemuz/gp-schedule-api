@@ -5,22 +5,29 @@ from src.schedule.stores import ScheduleTeacherStore
 from src.schedule.models import ScheduleTeacherDB
 from src.utils import DBUtils
 from src.schedule.repositories.teacher import teacher_repos
-from src.schedule.repositories.schedule import schedule_repos
+from src.schedule.repositories.change import change_repos
 from src.database import session_factory
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 
 class ScheduleTeacherRepos(ScheduleTeacherStore):
     async def get(self, id: int) -> Optional[ScheduleTeacher]:
-        schedule_teacher_db: Optional[ScheduleTeacher] = await DBUtils.select_by_id(ScheduleTeacherDB, id)
-        if schedule_teacher_db:
-            result = ScheduleTeacher(
-                id=schedule_teacher_db.id,
-                teacher=await teacher_repos.get(schedule_teacher_db.teacher_id),
-                schedule=await schedule_repos.get(schedule_teacher_db.schedule_id)
-            )
-        else:
-            result = None
+        async with session_factory() as session:
+            query = select(ScheduleTeacherDB).options(
+                selectinload(ScheduleTeacherDB.change)
+            ).where(ScheduleTeacherDB.id == id)
+            query_result = await session.execute(query)
+            schedule_teacher_db = query_result.scalar()
+
+            if schedule_teacher_db:
+                result = ScheduleTeacher(
+                    id=schedule_teacher_db.id,
+                    teacher=await teacher_repos.get(schedule_teacher_db.teacher_id),
+                    change=await change_repos.get(schedule_teacher_db.change.id)
+                )
+            else:
+                result = None
         return result
 
     async def get_all(self) -> List[ScheduleTeacher]:
@@ -32,11 +39,11 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
             )
         return result
 
-    async def add(self, obj: ScheduleTeacherInput) -> IdSchema:
+    async def add(self, obj: ScheduleTeacherInput, schedule_id: int) -> IdSchema:
         obj_db = ScheduleTeacherDB(
             id=obj.id,
             teacher_id=obj.teacher.id,
-            schedule_id=obj.schedule.id
+            schedule_id=schedule_id
         )
         await DBUtils.insert_new(obj_db)
 
@@ -45,20 +52,22 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
                 ScheduleTeacherDB.id
             ).where(
                 ScheduleTeacherDB.teacher_id == obj.teacher.id,
-                ScheduleTeacherDB.schedule_id == obj.schedule.id
+                ScheduleTeacherDB.schedule_id == schedule_id
             )
             query_result = await session.execute(query)
-            id = query_result.scalar()
-            return IdSchema(
-                id=id
+            result = IdSchema(
+                id=query_result.scalar()
             )
+        if obj.change:
+            await change_repos.add(obj.change)
+        return result
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ScheduleTeacherDB, id)
 
-    async def edit(self, obj: ScheduleTeacherInput) -> None:
+    async def edit(self, obj: ScheduleTeacherInput, schedule_id: int) -> None:
         await self.delete(obj.id)
-        await self.add(obj)
+        await self.add(obj, schedule_id)
 
 
 schedule_teacher_repos = ScheduleTeacherRepos()

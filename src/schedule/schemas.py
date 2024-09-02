@@ -62,6 +62,17 @@ class TeacherLoadListInput(BaseModel):
     hours: int
 
 
+class ChangeInput(BaseModel):
+    id: Optional[int]
+    teacher: IdSchema
+
+
+class ScheduleTeacherInput(BaseModel):
+    id: Optional[int]
+    teacher: IdSchema
+    change: Optional[ChangeInput]
+
+
 class ScheduleInput(BaseModel):
     id: Optional[int]
     date_: date
@@ -72,12 +83,7 @@ class ScheduleInput(BaseModel):
     discipline: IdSchema
     room: IdSchema
     schedule_list: IdSchema
-
-
-class ScheduleTeacherInput(BaseModel):
-    id: Optional[int]
-    teacher: IdSchema
-    schedule: IdSchema
+    schedule_teacher: ScheduleTeacherInput
 
 
 class Discipline(BaseModel):
@@ -90,12 +96,13 @@ class Discipline(BaseModel):
 class TypeDirection(BaseModel):
     id: Optional[int]
     name: str
+    full_name: str
 
 
 class Direction(BaseModel):
     id: Optional[int]
     name: str
-    id_sys: int
+    id_sys: str
     type_direction: TypeDirection
     hours: int
     disciplines: List[Discipline]
@@ -115,8 +122,9 @@ class Flow(BaseModel):
 
 class Teacher(BaseModel):
     id: Optional[int]
-    full_name: Optional[FullName]
-    position: Optional[str]
+    full_name: FullName
+    position: str
+    profile: str
 
 
 class Room(BaseModel):
@@ -151,6 +159,17 @@ class ScheduleList(BaseModel):
     load_list: LoadList
 
 
+class Change(BaseModel):
+    id: Optional[int]
+    teacher: Teacher
+
+
+class ScheduleTeacher(BaseModel):
+    id: Optional[int]
+    teacher: Teacher
+    change: Change
+
+
 class Schedule(BaseModel):
     id: Optional[int]
     date_: date
@@ -162,15 +181,4 @@ class Schedule(BaseModel):
     room: Room
 
     schedule_list: ScheduleList
-
-
-class ScheduleTeacher(BaseModel):
-    id: Optional[int]
-    teacher: Teacher
-    schedule: Schedule
-
-
-class Change(BaseModel):
-    id: Optional[int]
     schedule_teacher: ScheduleTeacher
-    teacher: Teacher

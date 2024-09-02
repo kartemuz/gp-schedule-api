@@ -14,7 +14,7 @@ class ChangeStore(ABC):
         pass
 
     @abstractmethod
-    async def add(self, obj: ChangeInput) -> IdSchema:
+    async def add(self, obj: ChangeInput, schedule_teacher_id: int) -> IdSchema:
         pass
 
     @abstractmethod
@@ -22,5 +22,5 @@ class ChangeStore(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, obj: ChangeInput) -> None:
+    async def edit(self, obj: ChangeInput, schedule_teacher_id: int) -> None:
         pass

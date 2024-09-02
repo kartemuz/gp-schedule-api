@@ -33,11 +33,11 @@ class EntityStore(ABC):
 
 class OpportunityStore(ABC):
     @abstractmethod
-    async def add(self, obj: Opportunity) -> None:
+    async def add(self, obj: Opportunity) -> int:
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Optional[Opportunity]:
+    async def get(self, id: int) -> Optional[Opportunity]:
         pass
 
     @abstractmethod
@@ -47,11 +47,11 @@ class OpportunityStore(ABC):
 
 class RoleStore(ABC):
     @abstractmethod
-    async def add(self, obj: RoleInput) -> None:
+    async def add(self, obj: RoleInput) -> int:
         pass
 
     @abstractmethod
-    async def get(self, name: str) -> Optional[Role]:
+    async def get(self, id: int) -> Optional[Role]:
         pass
 
     @abstractmethod
@@ -59,7 +59,7 @@ class RoleStore(ABC):
         pass
 
     @abstractmethod
-    async def delete(self, name: str) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
     @abstractmethod
@@ -69,7 +69,7 @@ class RoleStore(ABC):
 
 class UserStore(ABC):
     @abstractmethod
-    async def add(self, obj: UserInput) -> None:
+    async def add(self, obj: UserInput) -> int:
         pass
 
     @abstractmethod

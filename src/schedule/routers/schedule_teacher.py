@@ -27,20 +27,20 @@ async def get_schedule_teacher(
     return result
 
 
-@schedule_teacher_router.post('/add')
-async def add_schedule_teacher(
-    schedule_teacher: ScheduleTeacherInput,
-    auth_user: User = Depends(get_auth_active_user)
-) -> IdSchema:
-    return await schedule_service.schedule_teacher_store.add(schedule_teacher)
+# @schedule_teacher_router.post('/add')
+# async def add_schedule_teacher(
+#     schedule_teacher: ScheduleTeacherInput,
+#     auth_user: User = Depends(get_auth_active_user)
+# ) -> IdSchema:
+#     return await schedule_service.schedule_teacher_store.add(schedule_teacher)
 
 
-@schedule_teacher_router.post('/edit')
-async def edit_schedule_teacher(
-    schedule_teacher: ScheduleTeacherInput,
-    auth_user: User = Depends(get_auth_active_user)
-) -> None:
-    await schedule_service.schedule_teacher_store.edit(schedule_teacher)
+# @schedule_teacher_router.post('/edit')
+# async def edit_schedule_teacher(
+#     schedule_teacher: ScheduleTeacherInput,
+#     auth_user: User = Depends(get_auth_active_user)
+# ) -> None:
+#     await schedule_service.schedule_teacher_store.edit(schedule_teacher)
 
 
 @schedule_teacher_router.get('/delete')

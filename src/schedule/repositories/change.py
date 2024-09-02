@@ -16,7 +16,6 @@ class ChangeRepos(ChangeStore):
             result = Change(
                 id=schedule_teacher_db.id,
                 teacher=await teacher_repos.get(schedule_teacher_db.teacher_id),
-                schedule_teacher=await teacher_repos.get(schedule_teacher_db.schedule_id)
             )
         else:
             result = None
@@ -31,11 +30,11 @@ class ChangeRepos(ChangeStore):
             )
         return result
 
-    async def add(self, obj: ChangeInput) -> IdSchema:
+    async def add(self, obj: ChangeInput, schedule_teacher_id: int) -> IdSchema:
 
         obj_db = ChangeDB(
             id=obj.id,
-            schedule_teacher_id=obj.schedule_teacher.id,
+            schedule_teacher_id=schedule_teacher_id,
             teacher_id=obj.teacher.id
         )
         await DBUtils.insert_new(obj_db)
@@ -45,17 +44,20 @@ class ChangeRepos(ChangeStore):
                 ChangeDB.id
             ).where(
                 ChangeDB.teacher_id == obj.teacher.id,
-                ChangeDB.schedule_teacher_id == obj.schedule_teacher.id
+                ChangeDB.schedule_teacher_id == schedule_teacher_id
             )
             query_result = await session.execute(query)
-            id = query_result.scalar()
-            return IdSchema(
-                id=id
+            result = IdSchema(
+                id=query_result.scalar()
             )
+        return result
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ChangeDB, id)
 
-    async def edit(self, obj: ChangeInput) -> None:
+    async def edit(self, obj: ChangeInput, schedule_teacher_id: int) -> None:
         await self.delete(obj.id)
-        await self.add(obj)
+        await self.add(obj, schedule_teacher_id)
+
+
+change_repos = ChangeRepos()

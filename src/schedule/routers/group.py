@@ -18,6 +18,7 @@ group_router = APIRouter(
 async def get_group(
     id: Optional[int] = None,
     number_group: Optional[int] = None,
+    direction_id: Optional[int] = None
 ) -> Group | List[Group]:
     if id:
         result: Group = await schedule_service.group_store.get(id)
@@ -25,6 +26,10 @@ async def get_group(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif number_group:
         result: Group = await schedule_service.group_store.get_by_number_group(number_group)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    elif direction_id:
+        result: Group = await schedule_service.group_store.get_by_direction_id(direction_id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:

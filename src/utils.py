@@ -6,6 +6,13 @@ from sqlalchemy.exc import IntegrityError
 
 class DBUtils:
     @staticmethod
+    async def select_id_by_name(model: BaseDB, name: str) -> Optional[int]:
+        async with session_factory() as session:
+            query = select(model.id).where(model.name == name)
+            query_result = await session.execute(query)
+            return query_result.scalar()
+
+    @staticmethod
     def get_attribute_path(model: BaseDB, attributte: str) -> str:
         '''Helps in connection with foreign keys'''
         return f'{model.__tablename__}.{attributte}'

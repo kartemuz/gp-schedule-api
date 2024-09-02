@@ -13,6 +13,19 @@ teacher_router = APIRouter(
 )
 
 
+@teacher_router.post('/search')
+async def search_teacher(
+    word: str
+) -> List[Teacher]:
+    result: List[Teacher] = []
+    word = word.lower()
+    all_teachers = await schedule_service.teacher_store.get_all()
+    for t in all_teachers:
+        if word in t.full_name.name.lower() or word in t.full_name.surname.lower() or word in t.full_name.patronymic.lower():
+            result.append(t)
+    return result
+
+
 @teacher_router.post('/get_free')
 async def get_free_teacher(
     data: FreeObjectInput

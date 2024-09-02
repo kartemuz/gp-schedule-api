@@ -8,11 +8,12 @@ from src.utils import DBUtils
 
 class TypeDirectionRepos(TypeDirectionStore):
     async def get(self, id: int) -> Optional[TypeDirection]:
-        obj_db = await DBUtils.select_by_id(TypeDirectionDB, id)
+        obj_db: Optional[TypeDirectionDB] = await DBUtils.select_by_id(TypeDirectionDB, id)
         if obj_db:
             result = TypeDirection(
                 id=obj_db.id,
-                name=obj_db.name
+                name=obj_db.name,
+                full_name=obj_db.full_name
             )
         else:
             result = None
@@ -20,12 +21,13 @@ class TypeDirectionRepos(TypeDirectionStore):
 
     async def get_all(self) -> List[TypeDirection]:
         result: List[TypeDirection] = []
-        objs_db = await DBUtils.select_all(TypeDirectionDB)
+        objs_db: List[TypeDirectionDB] = await DBUtils.select_all(TypeDirectionDB)
         for obj_db in objs_db:
             result.append(
                 TypeDirection(
                     id=obj_db.id,
-                    name=obj_db.name
+                    name=obj_db.name,
+                    full_name=obj_db.full_name
                 )
             )
         return result
@@ -34,6 +36,7 @@ class TypeDirectionRepos(TypeDirectionStore):
         obj_db = TypeDirectionDB(
             id=obj.id,
             name=obj.name,
+            full_name=obj.full_name
         )
         await DBUtils.insert_new(obj_db)
         obj_db: TypeDirectionDB = await DBUtils.select_by_name(TypeDirectionDB, obj.name)

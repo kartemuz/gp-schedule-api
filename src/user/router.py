@@ -4,7 +4,7 @@ from src.user.schemas import RoleInput, UserInput, User, Opportunity, Role, User
 from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils
-from src.schemas import NameSchema
+from src.schemas import IdSchema
 
 
 tags: Final = ['user']
@@ -30,8 +30,8 @@ async def change_password(
         hashed_password=user.hashed_password,
         full_name=user.full_name,
         active=user.active,
-        role=NameSchema(
-            name=user.role.name
+        role=IdSchema(
+            id=user.role.id
         )
     )
     await user_service.user_store.edit(user_input)
@@ -72,9 +72,9 @@ opportunity_router = APIRouter(
 
 
 @opportunity_router.get('/get')
-async def get_opportunity(name: Optional[str] = None, auth_user: User = Depends(get_auth_active_user)) -> Opportunity | List[Opportunity]:
-    if name:
-        result = await user_service.opportunity_store.get(name)
+async def get_opportunity(id: Optional[str] = None, auth_user: User = Depends(get_auth_active_user)) -> Opportunity | List[Opportunity]:
+    if id:
+        result = await user_service.opportunity_store.get(id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -89,9 +89,9 @@ role_router = APIRouter(
 
 
 @role_router.get('/get')
-async def get_role(name: Optional[str] = None, auth_user: User = Depends(get_auth_active_user)) -> Role | List[Role]:
-    if name:
-        result = await user_service.role_store.get(name=name)
+async def get_role(id: Optional[str] = None, auth_user: User = Depends(get_auth_active_user)) -> Role | List[Role]:
+    if id:
+        result = await user_service.role_store.get(id=id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -100,8 +100,8 @@ async def get_role(name: Optional[str] = None, auth_user: User = Depends(get_aut
 
 
 @role_router.post('/add')
-async def add_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> None:
-    await user_service.role_store.add(role)
+async def add_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> int:
+    return await user_service.role_store.add(role)
 
 
 @role_router.post('/edit')
@@ -110,8 +110,8 @@ async def edit_role(role: RoleInput, auth_user: User = Depends(get_auth_active_u
 
 
 @role_router.get('/delete')
-async def delete_role(role: Role, auth_user: User = Depends(get_auth_active_user)) -> None:
-    await user_service.role_store.delete(role)
+async def delete_role(id: int, auth_user: User = Depends(get_auth_active_user)) -> None:
+    await user_service.role_store.delete(id)
 
 
 user_router.include_router(opportunity_router)

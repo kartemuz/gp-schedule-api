@@ -6,6 +6,14 @@ from src.schemas import IdSchema
 
 class ScheduleStore(ABC):
     @abstractmethod
+    async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
+        pass
+
+    @abstractmethod
+    async def get_by_group_id_and_date(self, group_id: int, start_date: str, end_date: str) -> List[Schedule]:
+        pass
+
+    @abstractmethod
     async def get(self, id: int) -> Optional[Schedule]:
         pass
 
