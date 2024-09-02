@@ -52,16 +52,15 @@ soc_net_repos = SocNetRepos()
 class OrgRepos(OrgStore):
 
     async def add(self, obj: Organization) -> None:
+        org_db = OrgDB(
+            name=obj.name,
+            full_name=obj.full_name,
+            address=obj.address,
+            phone=obj.phone,
+            email=obj.email
+        )
+        await DBUtils.insert_new(org_db)
         async with session_factory() as session:
-            org_db = OrgDB(
-                name=obj.name,
-                full_name=obj.full_name,
-                address=obj.address,
-                phone=obj.phone,
-                email=obj.email
-            )
-            session.add(org_db)
-            await DBUtils.insert_new(org_db)
 
             for s_n in obj.social_networks:
                 await soc_net_repos.add(s_n)
