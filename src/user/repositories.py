@@ -161,7 +161,7 @@ class RoleRepos(RoleStore):
                 opportunities = []
                 for op in role_db.role_opportunities:
                     opportunities.append(
-                        await self.get(op.opportunity_id)
+                        await opportunity_repos.get(op.opportunity_id)
                     )
 
                 result = Role(
