@@ -5,7 +5,7 @@ from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils
 from src.schemas import IdSchema
-from src.email.service import email_service
+from src.email_app.service import email_service
 
 
 tags: Final = ['user']
