@@ -5,6 +5,7 @@ from src.auth.dependencies import get_auth_active_user
 from src.user.service import user_service
 from src.auth.utils import PasswordUtils
 from src.schemas import IdSchema
+from src.email.service import email_service
 
 
 tags: Final = ['user']
@@ -23,7 +24,8 @@ async def change_password(
     user = await user_service.user_store.get(user_change_password.login)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    user.hashed_password = PasswordUtils.hash_password(user.hashed_password)
+    user.hashed_password = PasswordUtils.hash_password(
+        user_change_password.hashed_password)
     user_input = UserInput(
         login=user.login,
         email=user.email,
@@ -35,6 +37,11 @@ async def change_password(
         )
     )
     await user_service.user_store.edit(user_input)
+    email_service.send_email(
+        email=user_input.email,
+        subject='Смена пароля',
+        message=f'Новый пароль от аккаунта {user.login}: {user_change_password.hashed_password}'
+    )
 
 
 @user_router.get('/get')
@@ -100,7 +107,7 @@ async def get_role(id: Optional[str] = None, auth_user: User = Depends(get_auth_
 
 
 @role_router.post('/add')
-async def add_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> int:
+async def add_role(role: RoleInput, auth_user: User = Depends(get_auth_active_user)) -> IdSchema:
     return await user_service.role_store.add(role)
 
 

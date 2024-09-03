@@ -20,7 +20,7 @@ from sqlalchemy.exc import IntegrityError
 from src.utils import DBUtils
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select, and_
-from src.schemas import FullName
+from src.schemas import FullName, IdSchema
 
 
 class ActionRepos(ActionStore):
@@ -91,7 +91,7 @@ entity_repos = EntityRepos()
 
 
 class OpportunityRepos(OpportunityStore):
-    async def add(self, obj: Opportunity) -> int:
+    async def add(self, obj: Opportunity) -> IdSchema:
         # await action_repos.add(obj.action)
         # await entity_repos.add(obj.entity)
 
@@ -103,7 +103,7 @@ class OpportunityRepos(OpportunityStore):
         )
 
         await DBUtils.insert_new(opportunity_db)
-        return await DBUtils.select_id_by_name(OpportunityDB, obj.name)
+        return IdSchema(id=await DBUtils.select_id_by_name(OpportunityDB, obj.name))
 
     async def get(self, id: int) -> Optional[Opportunity]:
         async with session_factory() as session:
@@ -135,7 +135,7 @@ opportunity_repos = OpportunityRepos()
 
 
 class RoleRepos(RoleStore):
-    async def add(self, obj: RoleInput) -> int:
+    async def add(self, obj: RoleInput) -> IdSchema:
         role_db: RoleDB = RoleDB(
             id=obj.id,
             name=obj.name
@@ -148,7 +148,7 @@ class RoleRepos(RoleStore):
                 opportunity_id=op.id
             )
             await DBUtils.insert_new(role_opportunity_db)
-        return await DBUtils.select_id_by_name(RoleDB, obj.name)
+        return IdSchema(id=await DBUtils.select_id_by_name(RoleDB, obj.name))
 
     async def get(self, id: int) -> Optional[Role]:
         async with session_factory() as session:

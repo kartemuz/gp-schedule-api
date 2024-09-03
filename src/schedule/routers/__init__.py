@@ -68,13 +68,19 @@ async def get_schedule(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif group_id:
         result: Schedule = await schedule_service.schedule_store.get_by_group_id_and_date(
-
+            group_id=group_id,
+            start_date=start_of_week,
+            end_date=end_of_week
         )
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     elif teacher_id:
-        result: Schedule = await schedule_service.schedule_store.get_by_teacher_id_and_date(id)
+        result: Schedule = await schedule_service.schedule_store.get_by_teacher_id_and_date(
+            teacher_id=teacher_id,
+            start_date=start_of_week,
+            end_date=end_of_week
+        )
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 

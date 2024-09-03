@@ -7,6 +7,11 @@ ENV_PATH: Path = BASE_DIR / '.env'
 TEST_ENV_PATH: Path = BASE_DIR / '.test.env'
 
 
+class EmailSettings(BaseModel):
+    login: str
+    password: str
+
+
 class DatabaseSettings(BaseModel):
     name: str
     host: str
@@ -61,6 +66,7 @@ class Settings(BaseSettings):
     admin: AdminSettings
     org: OrganizationSettings
     client: ClientSettings
+    email: EmailSettings
 
 
 settings = Settings()
