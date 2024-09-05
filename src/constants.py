@@ -11,3 +11,8 @@ class DBConstants:
 
 class ScheduleConstants:
     TAGS: Final = ['schedule']
+
+
+class ExportConstants:
+    FILE_EXTENSION: Final = 'xlsx'
+    MEDIA_TYPE: Final = 'multipart/form-data'

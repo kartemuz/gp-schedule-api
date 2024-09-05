@@ -60,15 +60,8 @@ class OrgRepos(OrgStore):
             email=obj.email
         )
         await DBUtils.insert_new(org_db)
-        async with session_factory() as session:
-
-            for s_n in obj.social_networks:
-                await soc_net_repos.add(s_n)
-
-            try:
-                await session.commit()
-            except IntegrityError:
-                await session.rollback()
+        for s_n in obj.social_networks:
+            await soc_net_repos.add(s_n)
 
     async def get(self, name: str = settings.org.name) -> Organization:
         org_db = await DBUtils.select_by_name(model=OrgDB, name=name)
@@ -77,6 +70,7 @@ class OrgRepos(OrgStore):
         result = Organization(
             email=org_db.email,
             name=org_db.name,
+            full_name=org_db.full_name,
             address=org_db.address,
             phone=org_db.phone,
             social_networks=soc_nets

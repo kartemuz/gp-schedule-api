@@ -2,6 +2,22 @@ from src.database import BaseDB, session_factory
 from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from fastapi import UploadFile
+from src.config import settings
+import os
+from pathlib import Path
+
+
+class FileUtils:
+    @staticmethod
+    async def save_file(file: UploadFile) -> Path:
+        file_path = os.path.join(
+            settings.static.dir_path,
+            file.filename
+        )
+        with open(file_path, 'wb') as f:
+            f.write(await file.read())
+        return Path(file_path)
 
 
 class DBUtils:

@@ -10,7 +10,7 @@ class SocialNetwork(BaseModel):
 
 class Organization(BaseModel):
     name: str = settings.org.name
-    full_name: str
+    full_name: Optional[str]
     address: Optional[str]
     phone: Optional[str]
     email: Optional[EmailStr]

@@ -51,6 +51,14 @@ class ClientSettings(BaseModel):
     ip: str
 
 
+class StaticSettings(BaseModel):
+    dir_name: str
+
+    @property
+    def dir_path(self) -> Path:
+        return BASE_DIR / self.dir_name
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
@@ -67,6 +75,7 @@ class Settings(BaseSettings):
     org: OrganizationSettings
     client: ClientSettings
     email: EmailSettings
+    static: StaticSettings
 
 
 settings = Settings()

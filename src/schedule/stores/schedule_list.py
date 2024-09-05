@@ -6,6 +6,10 @@ from src.schemas import IdSchema
 
 class ScheduleListStore(ABC):
     @abstractmethod
+    async def get_active(sefl) -> None:
+        pass
+
+    @abstractmethod
     async def get(self, id: int) -> Optional[ScheduleList]:
         pass
 

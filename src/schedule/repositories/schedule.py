@@ -13,9 +13,29 @@ from src.schedule.repositories.discipline import discipline_repos
 from src.schedule.repositories.room import room_repos
 from src.schedule.repositories.schedule_teacher import schedule_teacher_repos
 from sqlalchemy.orm import selectinload
+from datetime import time, date
 
 
 class ScheduleRepos(ScheduleStore):
+    async def get_by_time_interval(self, time_start: time, time_end: time, date_: date, schedule_list_id: int) -> List[Schedule]:
+        result: List[Schedule] = []
+        async with session_factory() as session:
+            query = select(ScheduleDB.id).where(
+                and_(
+                    ScheduleDB.schedule_list_id == schedule_list_id,
+                    ScheduleDB.date_ == date_,
+                    ScheduleDB.time_start >= time_start,
+                    ScheduleDB.time_end <= time_end
+                )
+            )
+            query_result = await session.execute(query)
+            ids: List[int] = query_result.scalars()
+            for id in ids:
+                result.append(
+                    await self.get(id)
+                )
+        return result
+
     async def get_by_group_id_and_date(self, group_id: int, start_date: str, end_date: str) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:

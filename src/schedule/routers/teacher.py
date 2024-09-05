@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from typing import Optional, List
+from typing import Optional, List, Set
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
 from src.schedule.schemas import Teacher, FreeObjectInput
@@ -30,7 +30,31 @@ async def search_teacher(
 async def get_free_teacher(
     data: FreeObjectInput
 ) -> List[Teacher]:
-    pass
+    result: List[Teacher] = []
+    schedules = await schedule_service.schedule_store.get_by_time_interval(
+        time_start=data.time_start,
+        time_end=data.time_end,
+        date_=data.date_,
+        schedule_list_id=data.schedule_list_id
+    )
+    all_teachers = await schedule_service.teacher_store.get_all()
+    all_teacher_ids: Set[int] = set([t.id for t in all_teachers])
+
+    used_teacher_ids = []
+    for s in schedules:
+        schedule_teacher = s.schedule_teacher
+        change = schedule_teacher.change
+        if change:
+            used_teacher_ids.append(
+                change.teacher.id
+            )
+        else:
+            used_teacher_ids.append(
+                schedule_teacher.teacher.id
+            )
+    used_teacher_ids: Set[int] = set(used_teacher_ids)
+
+    return result
 
 
 @teacher_router.get('/get')

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from typing import Optional, List
+from typing import Optional, List, Set
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
 from src.schedule.schemas import Room, FreeObjectInput
@@ -18,7 +18,23 @@ room_router = APIRouter(
 async def get_free_room(
     data: FreeObjectInput
 ) -> List[Room]:
-    pass
+    schedules = await schedule_service.schedule_store.get_by_time_interval(
+        time_start=data.time_start,
+        time_end=data.time_end,
+        date_=data.date_,
+        schedule_list_id=data.schedule_list_id
+    )
+    all_rooms = await schedule_service.room_store.get_all()
+    all_room_ids: Set[int] = set(
+        [r.id for r in all_rooms]
+    )
+    used_room_ids: Set[int] = set([s.room.id for s in schedules])
+    free_room_ids: Set[int] = all_room_ids - used_room_ids
+    result: List[Room] = [
+        await schedule_service.room_store.get(id) for id in free_room_ids
+    ]
+
+    return result
 
 
 @room_router.get('/get')

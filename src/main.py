@@ -3,6 +3,8 @@ from src.auth.router import auth_router
 from src.user.router import user_router
 from src.org.router import org_router
 from src.schedule.routers import schedule_router
+from src.export_.router import export_router
+from src.import_.router import import_router
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 
@@ -19,6 +21,8 @@ routers = (
     user_router,
     org_router,
     schedule_router,
+    export_router,
+    import_router,
 )
 
 for r in routers:
