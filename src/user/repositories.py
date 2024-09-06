@@ -182,7 +182,7 @@ class RoleRepos(RoleStore):
 
     async def get_all(self) -> List[Role]:
         result: List[Role] = []
-        ids: List[int] = await DBUtils.select_all_name(RoleDB)
+        ids: List[int] = await DBUtils.select_all_id(RoleDB)
         for id in ids:
             result.append(await self.get(id=id))
         return result
