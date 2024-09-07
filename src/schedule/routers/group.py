@@ -2,10 +2,11 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Group, GroupInput
+from src.schedule.schemas import Group, GroupInput, FlowInput
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
+from src.config import settings
 
 
 group_router = APIRouter(
@@ -42,7 +43,19 @@ async def add_group(
     group: GroupInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
-    return await schedule_service.group_store.add(group)
+    group_id = await schedule_service.group_store.add(group)
+    await schedule_service.flow_store.add(
+        FlowInput(
+            name=f'{settings.schedule.base_flow_prefix}_{group.id}',
+            groups=[
+                IdSchema(
+                    id=group.id
+                )
+            ]
+        )
+    )
+
+    return group_id
 
 
 @group_router.post('/edit')
@@ -59,3 +72,4 @@ async def delete_group(
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
     await schedule_service.group_store.delete(id)
+    await schedule_service.flow_store.delete_by_name(f'{settings.schedule.base_flow_prefix}_{id}')

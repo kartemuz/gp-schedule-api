@@ -13,6 +13,10 @@ from src.schedule.repositories.group import group_repos
 
 
 class FlowRepos(FlowStore):
+    async def delete_by_name(self, name: str) -> None:
+        id: int = await DBUtils.select_id_by_name(FlowDB, name)
+        await self.delete(id)
+
     async def get(self, id: int) -> Optional[Flow]:
         async with session_factory() as session:
             query = select(FlowDB).where(FlowDB.id == id).options(

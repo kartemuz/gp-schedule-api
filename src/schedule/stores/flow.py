@@ -6,6 +6,10 @@ from src.schemas import IdSchema
 
 class FlowStore(ABC):
     @abstractmethod
+    async def delete_by_name(self, name: str) -> None:
+        pass
+
+    @abstractmethod
     async def get(self, id: int) -> Optional[Flow]:
         pass
 

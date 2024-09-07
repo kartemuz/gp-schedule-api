@@ -59,6 +59,10 @@ class StaticSettings(BaseModel):
         return BASE_DIR / self.dir_name
 
 
+class ScheduleSettings(BaseModel):
+    base_flow_prefix: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
@@ -76,6 +80,7 @@ class Settings(BaseSettings):
     client: ClientSettings
     email: EmailSettings
     static: StaticSettings
+    schedule: ScheduleSettings
 
 
 settings = Settings()

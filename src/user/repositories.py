@@ -92,9 +92,6 @@ entity_repos = EntityRepos()
 
 class OpportunityRepos(OpportunityStore):
     async def add(self, obj: Opportunity) -> IdSchema:
-        # await action_repos.add(obj.action)
-        # await entity_repos.add(obj.entity)
-
         opportunity_db: OpportunityDB = OpportunityDB(
             id=obj.id,
             name=obj.name,
@@ -204,11 +201,6 @@ class UserRepos(UserStore):
             role_id=obj.role.id
         )
         await DBUtils.insert_new(user_db)
-
-        # async with session_factory() as session:
-        #     query = select(UserDB.id).where(UserDB.login == obj.login)
-        #     query_result = await session.execute(query)
-        #     return query_result.scalar()
 
     async def get(self, login: str) -> Optional[User]:
         async with session_factory() as session:
