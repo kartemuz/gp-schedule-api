@@ -10,6 +10,10 @@ from pathlib import Path
 
 class FileUtils:
     @staticmethod
+    async def remove_file(path: Path) -> None:
+        os.remove(path)
+
+    @staticmethod
     async def create_dir(dir_path: str) -> None:
         if not os.path.exists(dir_path):
             os.mkdir(settings.static.dir_path)

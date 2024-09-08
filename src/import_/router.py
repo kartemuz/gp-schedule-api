@@ -17,6 +17,7 @@ async def import_teacher(
 ) -> None:
     path = await FileUtils.save_file(file)
     await import_service.import_teacher(path)
+    FileUtils.remove_file(path)
 
 
 @import_router.post('/type_lesson')
@@ -25,6 +26,7 @@ async def import_type_lesson(file: UploadFile = File(...),
                              ) -> None:
     path = await FileUtils.save_file(file)
     await import_service.import_type_lesson(path)
+    FileUtils.remove_file(path)
 
 
 @import_router.post('/type_direction')
@@ -33,3 +35,4 @@ async def import_type_direction(file: UploadFile = File(...),
                                 ) -> None:
     path = await FileUtils.save_file(file)
     await import_service.import_type_direction(path)
+    FileUtils.remove_file(path)
