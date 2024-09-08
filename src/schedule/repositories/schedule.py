@@ -17,6 +17,22 @@ from datetime import time, date
 
 
 class ScheduleRepos(ScheduleStore):
+    async def get_by_schedule_list_id(self, schedule_list_id: int) -> List[Schedule]:
+        result: List[Schedule] = []
+        async with session_factory() as session:
+            query = select(ScheduleDB.id).where(
+                and_(
+                    ScheduleDB.schedule_list_id == schedule_list_id
+                )
+            )
+            query_result = await session.execute(query)
+            ids: List[int] = query_result.scalars()
+            for id in ids:
+                result.append(
+                    await self.get(id)
+                )
+        return result
+
     async def get_by_time_interval(self, time_start: time, time_end: time, date_: date, schedule_list_id: int) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
@@ -116,11 +132,6 @@ class ScheduleRepos(ScheduleStore):
         return result
 
     async def add(self, obj: ScheduleInput) -> IdSchema:
-        # await type_lesson_repos.add(obj.type_lesson)
-        # await flow_repos.add(obj.flow)
-        # await discipline_repos.add(obj.discipline)
-        # await room_repos.add(obj.room)
-        # await schedule_list_repos.add(obj.schedule_list)
 
         obj_db = ScheduleDB(
             id=obj.id,

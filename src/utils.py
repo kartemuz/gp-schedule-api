@@ -10,6 +10,11 @@ from pathlib import Path
 
 class FileUtils:
     @staticmethod
+    async def create_dir(dir_path: str) -> None:
+        if not os.path.exists(dir_path):
+            os.mkdir(settings.static.dir_path)
+
+    @staticmethod
     async def save_file(file: UploadFile) -> Path:
         file_path = os.path.join(
             settings.static.dir_path,

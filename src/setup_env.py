@@ -11,6 +11,8 @@ from pydantic import BaseModel
 from typing import List
 from src.auth.utils import PasswordUtils
 from src.org.schemas import Organization
+from src.schedule.schemas import Teacher
+from src.schedule.service import schedule_service
 
 
 class SettingsJson(BaseModel):
@@ -20,6 +22,7 @@ class SettingsJson(BaseModel):
     roles: List[RoleInput]
     users: List[UserInput]
     organization: Organization
+    teachers: List[Teacher]
 
 
 json_path: Path = Path(__file__).parent.parent / 'settings.json'
@@ -64,6 +67,11 @@ async def create_organization() -> None:
     await org_service.org_store.add(settings_json.organization)
 
 
+async def create_teachers() -> None:
+    for t in settings_json.teachers:
+        await schedule_service.teacher_store.add(t)
+
+
 async def setup_env() -> None:
     await setup_db()
     await create_actions()
@@ -72,6 +80,7 @@ async def setup_env() -> None:
     await create_roles()
     await create_users()
     await create_organization()
+    await create_teachers()
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(setup_env())

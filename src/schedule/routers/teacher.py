@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List, Set
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Teacher, FreeObjectInput
+from src.schedule.schemas import Teacher, FreeObjectInput, TeacherLoadList
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -29,20 +29,22 @@ async def search_teacher(
 @teacher_router.post('/get_free')
 async def get_free_teacher(
     data: FreeObjectInput
-) -> List[Teacher]:
-    result: List[Teacher] = []
+) -> List[TeacherLoadList]:
+    result: List[TeacherLoadList] = []
     schedules = await schedule_service.schedule_store.get_by_time_interval(
         time_start=data.time_start,
         time_end=data.time_end,
         date_=data.date_,
         schedule_list_id=data.schedule_list_id
     )
-    all_teachers = await schedule_service.teacher_store.get_all()
-    all_teacher_ids: Set[int] = set([t.id for t in all_teachers])
+    schedule_list = await schedule_service.schedule_list_store.get(data.schedule_list_id)
+    all_teacher_ids: Set[int] = set(
+        [t_l.teacher.id for t_l in schedule_list.load_list.teacher_load_lists]
+    )
 
     used_teacher_ids = []
     for s in schedules:
-        schedule_teacher = s.schedule_teacher
+        schedule_teacher = s.schedule_teachers
         change = schedule_teacher.change
         if change:
             used_teacher_ids.append(
@@ -53,7 +55,11 @@ async def get_free_teacher(
                 schedule_teacher.teacher.id
             )
     used_teacher_ids: Set[int] = set(used_teacher_ids)
+    free_teacher_ids: Set[int] = all_teacher_ids - used_teacher_ids
 
+    for t_l in schedule_list.load_list.teacher_load_lists:
+        if t_l.teacher.id in free_teacher_ids:
+            result.append(t_l)
     return result
 
 

@@ -7,6 +7,10 @@ from datetime import time, date
 
 class ScheduleStore(ABC):
     @abstractmethod
+    async def get_by_schedule_list_id(self, schedule_list_id: int) -> List[Schedule]:
+        pass
+
+    @abstractmethod
     async def get_by_time_interval(self, time_start: time, time_end: time, date_: date, schedule_list_id: int) -> List[Schedule]:
         pass
 
