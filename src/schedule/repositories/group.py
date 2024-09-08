@@ -12,22 +12,23 @@ from src.schedule.repositories.direction import direction_repos
 
 class GroupRepos(GroupStore):
 
-    async def get_by_direction_id(self, direction_id: int) -> Optional[Group]:
+    async def get_by_direction_id(self, direction_id: int) -> List[Group]:
         async with session_factory() as session:
+            result: List[Group] = []
             query = select(GroupDB).where(GroupDB.direction_id == direction_id).options(
                 selectinload(GroupDB.direction)
             )
             query_result = await session.execute(query)
-            group_db = query_result.scalar()
-            if group_db:
-                direction = await direction_repos.get(id=group_db.direction.id)
-                result = Group(
-                    id=group_db.id,
-                    number_group=group_db.number_group,
-                    direction=direction
+            groups_db = query_result.scalars()
+            for g_db in groups_db:
+                direction = await direction_repos.get(id=g_db.direction.id)
+                result.append(
+                    Group(
+                        id=g_db.id,
+                        number_group=g_db.number_group,
+                        direction=direction
+                    )
                 )
-            else:
-                result = None
         return result
 
     async def get_by_number_group(self, number_group: str) -> Optional[Group]:

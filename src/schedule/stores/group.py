@@ -7,7 +7,7 @@ from src.schemas import IdSchema
 class GroupStore(ABC):
 
     @staticmethod
-    async def get_by_direction_id(self, direction_id: int) -> Optional[Group]:
+    async def get_by_direction_id(self, direction_id: int) -> List[Group]:
         pass
 
     @abstractmethod
