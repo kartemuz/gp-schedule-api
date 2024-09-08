@@ -83,11 +83,11 @@ class GroupRepos(GroupStore):
         )
         await DBUtils.insert_new(obj_db)
         async with session_factory() as session:
-            query = select(GroupDB).where(
+            query = select(GroupDB.id).where(
                 GroupDB.number_group == obj.number_group)
             query_result = await session.execute(query)
-            obj_db = query_result.scalar()
-        return IdSchema(id=obj_db.id)
+            id: int = query_result.scalar()
+        return IdSchema(id=id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(GroupDB, id)

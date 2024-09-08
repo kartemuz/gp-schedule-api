@@ -64,17 +64,18 @@ class FlowRepos(FlowStore):
         )
         await DBUtils.insert_new(flow_db)
 
-        flow_db = await DBUtils.select_by_name(FlowDB, obj.name)
-        result = flow_db.id
+        flow_db: FlowDB = await DBUtils.select_by_name(FlowDB, obj.name)
+        flow_id = flow_db.id
+        print(flow_id)
 
         for gr in obj.groups:
             fl_gr_db = FlowGroupDB(
-                flow_id=result,
+                flow_id=flow_id,
                 group_id=gr.id
             )
             await DBUtils.insert_new(fl_gr_db)
 
-        return result
+        return IdSchema(id=flow_id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(FlowDB, id)

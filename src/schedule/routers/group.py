@@ -46,11 +46,10 @@ async def add_group(
     group_id = await schedule_service.group_store.add(group)
     await schedule_service.flow_store.add(
         FlowInput(
-            name=f'{settings.schedule.base_flow_prefix}_{group.id}',
+            id=None,
+            name=f'{settings.schedule.base_flow_prefix}_{group_id.id}',
             groups=[
-                IdSchema(
-                    id=group.id
-                )
+                group_id
             ]
         )
     )
