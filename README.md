@@ -6,7 +6,7 @@
 
 #### Development
 ```bash
-fastapi dev --port 8213 src/main.py
+fastapi dev --port 8000 src/main.py
 ```
 #### Testing
 ```bash
@@ -14,7 +14,7 @@ pytest tests
 ```
 #### Server
 ```bash
-poetry run uvicorn src.main:app --host 0.0.0.0 --port 8123
+poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 ### Using make
 
