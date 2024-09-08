@@ -43,8 +43,13 @@ class RoomRepos(RoomStore):
         await DBUtils.delete_by_id(RoomDB, id)
 
     async def edit(self, obj: Room) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = RoomDB(
+            id=obj.id,
+            name=obj.name
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=RoomDB, **data)
 
 
 room_repos = RoomRepos()

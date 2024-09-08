@@ -55,8 +55,15 @@ class TeacherLoadListRepos(TeacherLoadListStore):
         await DBUtils.delete_by_id(TeacherLoadListDB, id)
 
     async def edit(self, obj: TeacherLoadListInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = TeacherLoadListDB(
+            id=obj.id,
+            load_list_id=obj.load_list.id,
+            teacher_id=obj.teacher.id,
+            hours=obj.hours
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=TeacherLoadListDB, **data)
 
 
 teacher_load_list_repos = TeacherLoadListRepos()

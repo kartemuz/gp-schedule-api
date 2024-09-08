@@ -73,8 +73,17 @@ class TeacherRepos(TeacherStore):
         await DBUtils.delete_by_id(TeacherDB, id)
 
     async def edit(self, obj: Teacher) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = TeacherDB(
+            id=obj.id,
+            surname=obj.full_name.surname,
+            name=obj.full_name.name,
+            patronymic=obj.full_name.patronymic,
+            position=obj.position,
+            profile=obj.profile
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=TeacherDB, **data)
 
 
 teacher_repos = TeacherRepos()

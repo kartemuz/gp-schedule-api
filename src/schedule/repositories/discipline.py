@@ -51,8 +51,15 @@ class DisciplineRepos(DisciplineStore):
         await DBUtils.delete_by_id(DisciplineDB, id)
 
     async def edit(self, obj: Discipline) -> None:
-        self.delete(obj.id)
-        self.add(obj)
+        obj_db = DisciplineDB(
+            id=obj.id,
+            name=obj.name,
+            lecture_hours=obj.lecture_hours,
+            practice_hours=obj.practice_hours
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=DisciplineDB, **data)
 
 
 discipline_repos = DisciplineRepos()

@@ -81,8 +81,22 @@ class FlowRepos(FlowStore):
         await DBUtils.delete_by_id(FlowDB, id)
 
     async def edit(self, obj: FlowInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        flow_db = FlowDB(
+            id=obj.id,
+            name=obj.name
+        )
+        data = flow_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=FlowDB, **data)
+
+        for gr in obj.groups:
+            fl_gr_db = FlowGroupDB(
+                flow_id=obj.id,
+                group_id=gr.id
+            )
+            data = fl_gr_db.__dict__.copy()
+            data.pop('_sa_instance_state')
+            await DBUtils.update_by_id(model=FlowGroupDB, **data)
 
 
 flow_repos = FlowRepos()

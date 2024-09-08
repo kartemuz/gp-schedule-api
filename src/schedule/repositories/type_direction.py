@@ -46,8 +46,14 @@ class TypeDirectionRepos(TypeDirectionStore):
         await DBUtils.delete_by_id(TypeDirectionDB, id)
 
     async def edit(self, obj: TypeDirection) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = TypeDirectionDB(
+            id=obj.id,
+            name=obj.name,
+            full_name=obj.full_name
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=TypeDirectionDB, **data)
 
 
 type_direction_repos = TypeDirectionRepos()

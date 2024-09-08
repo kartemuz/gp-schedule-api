@@ -38,18 +38,6 @@ async def add_direction(
     direction: DirectionInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
-    # direction = Direction(
-    #     id=direction_request.id,
-    #     name=direction_request.name,
-    #     id_sys=direction_request.id_sys,
-    #     type_direction=TypeDirection(
-    #         id=direction_request.type_direction.id
-    #     ),
-    #     hours=direction_request.hours,
-    #     disciplines=[
-    #         Discipline(id=disc.id) for disc in direction_request.disciplines
-    #     ]
-    # )
     return await schedule_service.direction_store.add(direction)
 
 
@@ -57,20 +45,8 @@ async def add_direction(
 async def edit_direction(
     direction: DirectionInput,
     auth_user: User = Depends(get_auth_active_user)
-) -> IdSchema:
-    # direction = Direction(
-    #     id=direction.id,
-    #     name=direction.name,
-    #     id_sys=direction.id_sys,
-    #     type_direction=TypeDirection(
-    #         id=direction.type_direction.id
-    #     ),
-    #     hours=direction.hours,
-    #     disciplines=[
-    #         Discipline(id=disc.id) for disc in direction.disciplines
-    #     ]
-    # )
-    return await schedule_service.direction_store.edit(direction)
+) -> None:
+    await schedule_service.direction_store.edit(direction)
 
 
 @direction_router.get('/delete')

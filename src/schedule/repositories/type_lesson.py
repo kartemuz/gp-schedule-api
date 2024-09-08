@@ -43,8 +43,13 @@ class TypeLessonRepos(TypeLessonStore):
         await DBUtils.delete_by_id(TypeLessonDB, id)
 
     async def edit(self, obj: TypeLesson) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = TypeLessonDB(
+            id=obj.id,
+            name=obj.name
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=TypeLessonDB, **data)
 
 
 type_lesson_repos = TypeLessonRepos()

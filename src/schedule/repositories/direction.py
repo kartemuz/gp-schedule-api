@@ -121,8 +121,16 @@ class DirectionRepos(DirectionStore):
         await DBUtils.delete_by_id(DirectionDB, id)
 
     async def edit(self, obj: DirectionInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = DirectionDB(
+            id=obj.id,
+            name=obj.name,
+            id_sys=obj.id_sys,
+            type_direction_id=obj.type_direction.id,
+            hours=obj.hours
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=DirectionDB, **data)
 
 
 direction_repos = DirectionRepos()

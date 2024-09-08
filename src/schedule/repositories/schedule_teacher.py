@@ -66,8 +66,14 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
         await DBUtils.delete_by_id(ScheduleTeacherDB, id)
 
     async def edit(self, obj: ScheduleTeacherInput, schedule_id: int) -> None:
-        await self.delete(obj.id)
-        await self.add(obj, schedule_id)
+        obj_db = ScheduleTeacherDB(
+            id=obj.id,
+            teacher_id=obj.teacher.id,
+            schedule_id=schedule_id
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=ScheduleTeacherDB, **data)
 
 
 schedule_teacher_repos = ScheduleTeacherRepos()

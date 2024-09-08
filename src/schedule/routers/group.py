@@ -30,7 +30,7 @@ async def get_group(
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif direction_id:
-        result: Group = await schedule_service.group_store.get_by_direction_id(direction_id)
+        result: List[Group] = await schedule_service.group_store.get_by_direction_id(direction_id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:

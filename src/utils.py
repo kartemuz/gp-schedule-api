@@ -1,6 +1,6 @@
 from src.database import BaseDB, session_factory
 from typing import List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from fastapi import UploadFile
 from src.config import settings
@@ -30,6 +30,15 @@ class FileUtils:
 
 
 class DBUtils:
+    @staticmethod
+    async def update_by_id(model: BaseDB, **kwargs) -> None:
+        async with session_factory() as session:
+            query = update(model).where(
+                model.id == kwargs.get('id')
+            ).values(**kwargs)
+            await session.execute(query)
+            await session.commit()
+
     @staticmethod
     async def select_id_by_name(model: BaseDB, name: str) -> Optional[int]:
         async with session_factory() as session:

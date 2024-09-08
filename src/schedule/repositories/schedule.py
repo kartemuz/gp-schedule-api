@@ -172,8 +172,20 @@ class ScheduleRepos(ScheduleStore):
         await DBUtils.delete_by_id(ScheduleDB, id)
 
     async def edit(self, obj: Schedule) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = ScheduleDB(
+            id=obj.id,
+            schedule_list_id=obj.schedule_list.id,
+            date_=obj.date_,
+            time_start=obj.time_start,
+            time_end=obj.time_end,
+            type_lesson_id=obj.type_lesson.id,
+            flow_id=obj.flow.id,
+            discipline_id=obj.discipline.id,
+            room_id=obj.room.id
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=ScheduleDB, **data)
 
 
 schedule_repos = ScheduleRepos()

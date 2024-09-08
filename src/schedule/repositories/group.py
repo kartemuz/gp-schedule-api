@@ -94,8 +94,14 @@ class GroupRepos(GroupStore):
         await DBUtils.delete_by_id(GroupDB, id)
 
     async def edit(self, obj: GroupInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = GroupDB(
+            id=obj.id,
+            direction_id=obj.direction.id,
+            number_group=obj.number_group
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=GroupDB, **data)
 
 
 group_repos = GroupRepos()

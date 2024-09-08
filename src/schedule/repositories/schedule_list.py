@@ -68,8 +68,17 @@ class ScheduleListRepos(ScheduleListStore):
         await DBUtils.delete_by_id(ScheduleListDB, id)
 
     async def edit(self, obj: ScheduleListInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = ScheduleListDB(
+            id=obj.id,
+            name=obj.name,
+            date_start=obj.date_start,
+            date_end=obj.date_end,
+            load_list_id=obj.load_list.id,
+            active=obj.active
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=ScheduleListDB, **data)
 
 
 schedule_list_repos = ScheduleListRepos()

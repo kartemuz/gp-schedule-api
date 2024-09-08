@@ -56,8 +56,14 @@ class ChangeRepos(ChangeStore):
         await DBUtils.delete_by_id(ChangeDB, id)
 
     async def edit(self, obj: ChangeInput, schedule_teacher_id: int) -> None:
-        await self.delete(obj.id)
-        await self.add(obj, schedule_teacher_id)
+        obj_db = ChangeDB(
+            id=obj.id,
+            schedule_teacher_id=schedule_teacher_id,
+            teacher_id=obj.teacher.id
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=ChangeDB, **data)
 
 
 change_repos = ChangeRepos()

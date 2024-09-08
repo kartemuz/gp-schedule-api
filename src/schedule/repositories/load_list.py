@@ -75,8 +75,14 @@ class LoadListRepos(LoadListStore):
         await DBUtils.delete_by_id(LoadListDB, id)
 
     async def edit(self, obj: LoadListInput) -> None:
-        await self.delete(obj.id)
-        await self.add(obj)
+        obj_db = LoadListDB(
+            id=obj.id,
+            name=obj.name,
+            user_login=obj.user_login
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=LoadListDB, **data)
 
 
 load_list_repos = LoadListRepos()
