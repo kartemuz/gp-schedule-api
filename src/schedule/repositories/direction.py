@@ -85,15 +85,15 @@ class DirectionRepos(DirectionStore):
 
     async def get_all(self) -> List[Direction]:
         result: List[Direction] = []
-        all_id = await DBUtils.select_all_id(DirectionDB)
-        for id in all_id:
-            result.append(await self.get(id))
+        async with session_factory() as session:
+            query = select(DirectionDB).order_by(DirectionDB.id_sys)
+            query_result = await session.execute(query)
+            all_directions = query_result.scalars()
+            for d in all_directions:
+                result.append(await self.get(d.id))
         return result
 
     async def add(self, obj: DirectionInput) -> IdSchema:
-        # for disc in obj.disciplines:
-        #     await discipline_repos.add(disc)
-        # await type_direction_repos.add(obj.type_direction)
         obj_db = DirectionDB(
             id=obj.id,
             name=obj.name,
