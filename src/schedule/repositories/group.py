@@ -82,13 +82,14 @@ class GroupRepos(GroupStore):
             direction_id=obj.direction.id,
             number_group=obj.number_group
         )
+        print(obj.id, obj.direction.id, obj.number_group)
         await DBUtils.insert_new(obj_db)
         async with session_factory() as session:
             query = select(GroupDB.id).where(
                 GroupDB.number_group == obj.number_group)
             query_result = await session.execute(query)
             id: int = query_result.scalar()
-        return IdSchema(id=id)
+            return IdSchema(id=id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(GroupDB, id)

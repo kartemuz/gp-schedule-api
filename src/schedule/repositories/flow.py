@@ -66,8 +66,6 @@ class FlowRepos(FlowStore):
 
         flow_db: FlowDB = await DBUtils.select_by_name(FlowDB, obj.name)
         flow_id = flow_db.id
-        print(flow_id)
-
         for gr in obj.groups:
             fl_gr_db = FlowGroupDB(
                 flow_id=flow_id,

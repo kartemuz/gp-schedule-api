@@ -15,6 +15,7 @@ flow_router = APIRouter(
 )
 
 
+@flow_router.get('/get_base_flow')
 async def get_base_flow(id: Optional[int] = None) -> Flow | List[Flow]:
     if id:
         result: Flow = await schedule_service.flow_store.get(id)

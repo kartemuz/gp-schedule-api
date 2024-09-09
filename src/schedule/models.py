@@ -97,7 +97,8 @@ class GroupDB(BaseDB):
         ),
         nullable=False
     )
-    number_group: Mapped[int] = mapped_column(nullable=False, unique=True)
+    number_group: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH), nullable=False, unique=True)
 
     direction: Mapped['DirectionDB'] = relationship(
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN

@@ -24,7 +24,7 @@ class DirectionInput(BaseModel):
 
 class GroupInput(BaseModel):
     id: Optional[int]
-    number_group: int
+    number_group: str
     direction: IdSchema
 
 
@@ -110,7 +110,7 @@ class Direction(BaseModel):
 
 class Group(BaseModel):
     id: Optional[int]
-    number_group: int
+    number_group: str
     direction: Direction
 
 
