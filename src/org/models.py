@@ -1,12 +1,17 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
-from src.database import BaseDB, str_pk
+from src.database import BaseDB, str_pk, int_pk
 from src.constants import DBConstants
 
 
 class OrgDB(BaseDB):
     __tablename__ = 'organization'
-    name: Mapped[str_pk]
+    id: Mapped[int_pk]
+    name: Mapped[str] = mapped_column(
+        String(
+            DBConstants.SHORT_STRING_LENGTH
+        )
+    )
     full_name: Mapped[str] = mapped_column(
         String(
             DBConstants.SHORT_STRING_LENGTH

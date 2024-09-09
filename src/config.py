@@ -37,14 +37,15 @@ class AuthSettings(BaseModel):
     token_type: str = 'Bearer'
 
 
-class AdminSettings(BaseModel):
-    login: str
-    password: str
-    email: EmailStr
+# class AdminSettings(BaseModel):
+#     login: str
+#     password: str
+#     email: EmailStr
 
 
 class OrganizationSettings(BaseModel):
-    name: str
+    # name: str
+    id: int
 
 
 class ClientSettings(BaseModel):
@@ -75,7 +76,7 @@ class Settings(BaseSettings):
 
     db: DatabaseSettings
     auth: AuthSettings = AuthSettings()
-    admin: AdminSettings
+    # admin: AdminSettings
     org: OrganizationSettings
     client: ClientSettings
     email: EmailSettings

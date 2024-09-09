@@ -63,11 +63,12 @@ class OrgRepos(OrgStore):
         for s_n in obj.social_networks:
             await soc_net_repos.add(s_n)
 
-    async def get(self, name: str = settings.org.name) -> Organization:
-        org_db = await DBUtils.select_by_name(model=OrgDB, name=name)
+    async def get(self, id: int) -> Organization:
+        org_db = await DBUtils.select_by_id(model=OrgDB, id=id)
         soc_nets = await soc_net_repos.get_all()
 
         result = Organization(
+            id=org_db.id,
             email=org_db.email,
             name=org_db.name,
             full_name=org_db.full_name,
@@ -87,5 +88,5 @@ class OrgRepos(OrgStore):
         for s_c in obj.social_networks:
             await soc_net_repos.add(s_c)
 
-    async def delete(self, name: str = settings.org.name) -> None:
-        await DBUtils.delete_by_name(model=SocNetDB, name=name)
+    async def delete(self, id: int) -> None:
+        await DBUtils.delete_by_id(model=SocNetDB, id=id)

@@ -13,6 +13,7 @@ from src.auth.utils import PasswordUtils
 from src.org.schemas import Organization
 from src.schedule.schemas import Teacher, TypeDirection, TypeLesson, Discipline, DirectionInput
 from src.schedule.service import schedule_service
+from src.config import settings
 
 
 class SettingsJson(BaseModel):
@@ -88,7 +89,9 @@ async def create_users() -> None:
 
 
 async def create_organization() -> None:
-    await org_service.org_store.add(settings_json.organization)
+    org = settings_json.organization
+    org.id = settings.org.id
+    await org_service.org_store.add(org)
 
 
 async def create_teachers() -> None:

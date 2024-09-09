@@ -5,6 +5,7 @@ from src.user.schemas import User
 from src.org.schemas import Organization, SocialNetwork
 from src.org.service import org_service
 from typing import Optional, List
+from src.config import settings
 
 tags: Final = ['organization']
 
@@ -17,7 +18,7 @@ org_router = APIRouter(
 
 @org_router.get('/get')
 async def get_organization() -> Organization:
-    return await org_service.org_store.get()
+    return await org_service.org_store.get(settings.org.id)
 
 
 @org_router.post('/add')
@@ -27,6 +28,7 @@ async def add_organization(organization: Organization, auth_user: User = Depends
 
 @org_router.post('/edit')
 async def edit_organization(organization: Organization, auth_user: User = Depends(get_auth_active_user)) -> None:
+    organization.id = settings.org.id
     await org_service.org_store.edit(organization)
 
 

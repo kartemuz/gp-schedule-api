@@ -10,7 +10,7 @@ class OrgStore(ABC):
         pass
 
     @abstractmethod
-    async def get(self, name: str = settings.org.name) -> Organization:
+    async def get(self, id: int) -> Organization:
         pass
 
     @abstractmethod
@@ -18,7 +18,7 @@ class OrgStore(ABC):
         pass
 
     @abstractmethod
-    async def delete(self, name: str = settings.org.name) -> None:
+    async def delete(self, id: int) -> None:
         pass
 
 
