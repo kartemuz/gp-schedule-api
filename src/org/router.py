@@ -21,9 +21,9 @@ async def get_organization() -> Organization:
     return await org_service.org_store.get(settings.org.id)
 
 
-@org_router.post('/add')
-async def add_organization(organization: Organization, auth_user: User = Depends(get_auth_active_user)) -> None:
-    await org_service.org_store.add(organization)
+# @org_router.post('/add')
+# async def add_organization(organization: Organization, auth_user: User = Depends(get_auth_active_user)) -> None:
+#     await org_service.org_store.add(organization)
 
 
 @org_router.post('/edit')
