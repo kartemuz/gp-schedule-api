@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from src.database import session_factory
 from src.utils import DBUtils
 from src.schemas import FullName
+from src.schedule.repositories.teacher import teacher_repos
 
 
 class LoadListRepos(LoadListStore):
@@ -31,15 +32,7 @@ class LoadListRepos(LoadListStore):
                         TeacherLoadList(
                             id=t_l.id,
                             hours=t_l.hours,
-                            teacher=Teacher(
-                                id=t_l.teacher.id,
-                                full_name=FullName(
-                                    name=t_l.teacher.name,
-                                    surname=t_l.teacher.surname,
-                                    patronymic=t_l.teacher.patronymic
-                                ),
-                                position=t_l.teacher.position
-                            )
+                            teacher=await teacher_repos.get(t_l.teacher.id)
                         )
                     )
                 result = LoadList(

@@ -39,10 +39,11 @@ async def get_flow(
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
-        result: List[Flow] = await schedule_service.flow_store.get_all()
-        for r in result:
-            if settings.schedule.base_flow_prefix in r.name:
-                result.remove(r)
+        flows: List[Flow] = await schedule_service.flow_store.get_all()
+        result: List[Flow] = []
+        for f in flows:
+            if settings.schedule.base_flow_prefix not in f.name:
+                result.append(f)
     return result
 
 

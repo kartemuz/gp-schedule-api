@@ -10,7 +10,7 @@ from sqlalchemy import select, and_
 
 
 class TeacherLoadListRepos(TeacherLoadListStore):
-    async def get(id: int) -> Optional[TeacherLoadList]:
+    async def get(self, id: int) -> Optional[TeacherLoadList]:
         teacher_load_list_db: Optional[TeacherLoadListDB] = await DBUtils.select_by_id(TeacherLoadListDB, id)
         if teacher_load_list_db:
             result = TeacherLoadList(

@@ -139,9 +139,11 @@ class RoleRepos(RoleStore):
         )
         await DBUtils.insert_new(role_db)
 
+        role_id = await DBUtils.select_id_by_name(RoleDB, obj.name)
+
         for op in obj.opportunities:
             role_opportunity_db: RoleOpportunityDB = RoleOpportunityDB(
-                role_id=obj.id,
+                role_id=role_id,
                 opportunity_id=op.id
             )
             await DBUtils.insert_new(role_opportunity_db)
