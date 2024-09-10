@@ -58,7 +58,7 @@ class LoadListRepos(LoadListStore):
         obj_db = LoadListDB(
             id=obj.id,
             name=obj.name,
-            user_login=obj.user_login
+            user_login=obj.user.login
         )
         await DBUtils.insert_new(obj_db)
         obj_db: LoadListDB = await DBUtils.select_by_name(LoadListDB, obj.name)
