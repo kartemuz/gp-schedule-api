@@ -83,7 +83,7 @@ class ScheduleInput(BaseModel):
     discipline: IdSchema
     room: IdSchema
     schedule_list: IdSchema
-    schedule_teacher: ScheduleTeacherInput
+    schedule_teachers: List[ScheduleTeacherInput]
 
 
 class Discipline(BaseModel):
@@ -181,4 +181,4 @@ class Schedule(BaseModel):
     room: Room
 
     schedule_list: ScheduleList
-    schedule_teacher: Optional[ScheduleTeacher]
+    schedule_teachers: List[ScheduleTeacher]

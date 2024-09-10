@@ -79,7 +79,7 @@ class ScheduleRepos(ScheduleStore):
         async with session_factory() as session:
             query = select(ScheduleDB).options(
                 selectinload(
-                    ScheduleDB.schedule_teacher
+                    ScheduleDB.schedule_teachers
                 ).selectinload(
                     ScheduleTeacherDB.teacher
                     # ScheduleTeacherDB.change
@@ -102,11 +102,16 @@ class ScheduleRepos(ScheduleStore):
         async with session_factory() as session:
             query = select(ScheduleDB).options(
                 selectinload(
-                    ScheduleDB.schedule_teacher
+                    ScheduleDB.schedule_teachers
                 )
             ).where(ScheduleDB.id == id)
             query_result = await session.execute(query)
             schedule_db = query_result.scalar()
+            schedule_teachers = []
+            for s_t_db in schedule_db.schedule_teachers:
+                schedule_teachers.append(
+                    await schedule_teacher_repos.get(s_t_db.id)
+                )
             if schedule_db:
                 result = Schedule(
                     id=schedule_db.id,
@@ -118,7 +123,7 @@ class ScheduleRepos(ScheduleStore):
                     discipline=await discipline_repos.get(schedule_db.discipline_id),
                     room=await room_repos.get(schedule_db.room_id),
                     schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
-                    schedule_teacher=await schedule_teacher_repos.get(schedule_db.schedule_teacher.id) if schedule_db.schedule_teacher else None
+                    schedule_teachers=schedule_teachers
                 )
             else:
                 result = None
@@ -167,7 +172,8 @@ class ScheduleRepos(ScheduleStore):
             result = IdSchema(
                 id=query_result.scalar()
             )
-        await schedule_teacher_repos.add(obj.schedule_teacher, schedule_id=result)
+        for s_t in obj.schedule_teachers:
+            await schedule_teacher_repos.add(s_t, schedule_id=result)
         return result
 
     async def delete(self, id: int) -> None:

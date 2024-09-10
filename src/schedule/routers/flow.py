@@ -24,9 +24,11 @@ async def get_base_flow(id: Optional[int] = None) -> Flow | List[Flow]:
     else:
         flows: List[Flow] = await schedule_service.flow_store.get_all()
         result: List[Flow] = []
+        used_ids = []
         for f in flows:
-            if settings.schedule.base_flow_prefix in f.name:
+            if settings.schedule.base_flow_prefix in f.name and f.id not in used_ids:
                 result.append(f)
+                used_ids.append(f.id)
     return result
 
 

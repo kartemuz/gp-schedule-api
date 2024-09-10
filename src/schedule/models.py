@@ -293,7 +293,7 @@ class ScheduleDB(BaseDB):
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
-    schedule_teacher: Mapped['ScheduleTeacherDB'] = relationship(
+    schedule_teachers: Mapped[List['ScheduleTeacherDB']] = relationship(
         lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
