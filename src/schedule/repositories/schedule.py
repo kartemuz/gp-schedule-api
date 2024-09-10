@@ -69,6 +69,7 @@ class ScheduleRepos(ScheduleStore):
                 result.append(
                     await self.get(sc_db.id)
                 )
+        return result
 
     async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
         result: List[Schedule] = []
@@ -77,15 +78,12 @@ class ScheduleRepos(ScheduleStore):
                 selectinload(
                     ScheduleDB.schedule_teacher
                 ).selectinload(
-                    ScheduleTeacherDB.teacher,
-                    ScheduleTeacherDB.change
+                    ScheduleTeacherDB.teacher
+                    # ScheduleTeacherDB.change
                 )
             ).where(
                 and_(
-                    or_(
-                        TeacherDB.id == teacher_id,
-                        ChangeDB.teacher_id == teacher_id,
-                    ),
+                    TeacherDB.id == teacher_id,
                     ScheduleDB.date_.between(start_date, end_date)
                 )
             )
@@ -95,6 +93,7 @@ class ScheduleRepos(ScheduleStore):
                 result.append(
                     await self.get(sc_db.id)
                 )
+        return result
 
     async def get(self, id: int) -> Optional[Schedule]:
         async with session_factory() as session:
