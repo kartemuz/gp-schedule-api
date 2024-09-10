@@ -71,7 +71,7 @@ class LoadListRepos(LoadListStore):
         obj_db = LoadListDB(
             id=obj.id,
             name=obj.name,
-            user_login=obj.user_login
+            user_login=obj.user.login
         )
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')
