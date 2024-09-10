@@ -37,11 +37,11 @@ async def change_password(
         )
     )
     await user_service.user_store.edit(user_input)
-    email_service.send_email(
-        email_=user_input.email,
-        subject='Смена пароля',
-        message=f'Новый пароль от аккаунта {user.login}: {user_change_password.hashed_password}'
-    )
+    # email_service.send_email(
+    #     email_=user_input.email,
+    #     subject='Смена пароля',
+    #     message=f'Новый пароль от аккаунта {user.login}: {user_change_password.hashed_password}'
+    # )
 
 
 @user_router.get('/get')
