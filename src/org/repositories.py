@@ -53,6 +53,7 @@ class OrgRepos(OrgStore):
 
     async def add(self, obj: Organization) -> None:
         org_db = OrgDB(
+            id=obj.id,
             name=obj.name,
             full_name=obj.full_name,
             address=obj.address,
@@ -80,7 +81,7 @@ class OrgRepos(OrgStore):
         return result
 
     async def edit(self, obj: Organization) -> None:
-        await self.delete(name=obj.name)
+        await self.delete(id=obj.id)
         await self.add(obj)
         all_s_c_name = await DBUtils.select_all_name(model=SocNetDB)
         for name in all_s_c_name:
@@ -89,4 +90,4 @@ class OrgRepos(OrgStore):
             await soc_net_repos.add(s_c)
 
     async def delete(self, id: int) -> None:
-        await DBUtils.delete_by_id(model=SocNetDB, id=id)
+        await DBUtils.delete_by_id(model=OrgDB, id=id)

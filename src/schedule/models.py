@@ -61,7 +61,8 @@ class DirectionDB(BaseDB):
     )
 
     disciplines_directions: Mapped[List['DisciplineDirectionDB']] = relationship(
-        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN,
+        cascade=DBConstants.RELATIONSHIP_CASCADE
     )
 
 
@@ -115,7 +116,8 @@ class FlowDB(BaseDB):
     )
 
     flows_groups: Mapped[List['FlowGroupDB']] = relationship(
-        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN,
+        cascade=DBConstants.RELATIONSHIP_CASCADE
     )
 
 

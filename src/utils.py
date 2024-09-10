@@ -94,7 +94,6 @@ class DBUtils:
 
     @staticmethod
     async def delete_by_id(model: BaseDB, id: int) -> None:
-        obj_db = await DBUtils.select_by_id(model, id)
         async with session_factory() as session:
             obj_db = await session.get(model, id)
             await session.delete(obj_db)
