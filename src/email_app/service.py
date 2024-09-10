@@ -7,8 +7,8 @@ from src.config import settings
 
 class EmailService:
     def send_email(self, email_: EmailStr, subject: str, message: str) -> None:
-        host = 'smtp.' + \
-            settings.email.login[settings.email.login.index('@') + 1:]
+        # host = 'smtp.' + \
+        #     settings.email.login[settings.email.login.index('@') + 1:]
         host = 'smtp.yandex.ru'
 
         msg = MIMEText(f'{message}', 'plain', 'utf-8')
@@ -16,10 +16,11 @@ class EmailService:
         msg['From'] = settings.email.login
         msg['To'] = email_
 
-        s = smtplib.SMTP(host, 587, timeout=10)
+        s = smtplib.SMTP_SSL(host=host, port=465, timeout=10)
 
-        s.starttls()
+        # s.starttls()
         s.login(settings.email.login, settings.email.password)
+        s.auth_plain()
 
         s.sendmail(msg['From'], settings.email.login, msg.as_string())
         s.quit()
