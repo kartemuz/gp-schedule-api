@@ -49,7 +49,7 @@ class TeacherLoadListRepos(TeacherLoadListStore):
             )
             query_result = await session.execute(query)
             obj_db = query_result.scalar()
-        return obj_db.id
+        return IdSchema(id=obj_db.id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(TeacherLoadListDB, id)
