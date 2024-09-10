@@ -24,7 +24,7 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
                 result = ScheduleTeacher(
                     id=schedule_teacher_db.id,
                     teacher=await teacher_repos.get(schedule_teacher_db.teacher_id),
-                    change=await change_repos.get(schedule_teacher_db.change.id)
+                    change=await change_repos.get(schedule_teacher_db.change.id) if schedule_teacher_db.change else None
                 )
             else:
                 result = None

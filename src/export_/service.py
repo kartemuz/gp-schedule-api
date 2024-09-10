@@ -146,7 +146,8 @@ class ExportService:
                         teacher_full_name = s.schedule_teacher.teacher.full_name
                 else:
                     teacher_full_name = FullName(
-                        name=None, surname=None, patronymic=None)
+                        name=None, surname=None, patronymic=None
+                    )
                 ws.append(
                     [
                         s.date_,
