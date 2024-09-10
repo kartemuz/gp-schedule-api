@@ -181,4 +181,4 @@ class Schedule(BaseModel):
     room: Room
 
     schedule_list: ScheduleList
-    schedule_teacher: ScheduleTeacher
+    schedule_teacher: Optional[ScheduleTeacher]

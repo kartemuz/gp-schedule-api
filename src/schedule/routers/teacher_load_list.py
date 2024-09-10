@@ -17,12 +17,15 @@ teacher_load_list_router = APIRouter(
 @teacher_load_list_router.get('/get')
 async def get_teacher_load_list(
     id: Optional[int] = None,
+    load_list_id: Optional[int] = None,
     auth_user: User = Depends(get_auth_active_user)
 ) -> TeacherLoadList | List[TeacherLoadList]:
     if id:
         result: TeacherLoadList = await schedule_service.teacher_load_list_store.get(id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    elif load_list_id:
+        pass
     else:
         result: List[TeacherLoadList] = await schedule_service.teacher_load_list_store.get_all()
     return result

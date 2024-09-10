@@ -19,7 +19,7 @@ from src.user.models import (
 from sqlalchemy.exc import IntegrityError
 from src.utils import DBUtils
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, update
 from src.schemas import FullName, IdSchema
 
 
@@ -227,8 +227,29 @@ class UserRepos(UserStore):
         return result
 
     async def edit(self, obj: UserInput) -> None:
-        await self.delete(login=obj.login)
-        await self.add(obj=obj)
+        obj_db = UserDB(
+            login=obj.login,
+            email=obj.email,
+            hashed_password=obj.hashed_password,
+            surname=obj.full_name.surname,
+            name=obj.full_name.name,
+            patronymic=obj.full_name.patronymic,
+            role_id=obj.role.id
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+
+        async with session_factory() as session:
+            query = update(UserDB).where(
+                UserDB.login == obj.login
+            ).values(**data)
+            await session.execute(query)
+            await session.commit()
+
+        # await DBUtils.update_by_id(model=UserDB, **data)
+
+        # await self.delete(login=obj.login)
+        # await self.add(obj=obj)
 
     async def delete(self, login: str) -> None:
         async with session_factory() as session:

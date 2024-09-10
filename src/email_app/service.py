@@ -6,19 +6,22 @@ from src.config import settings
 
 
 class EmailService:
-    def send_email(email: EmailStr, subject: str, message: str) -> None:
-        host = settings.email.login[settings.email.login.index('@') + 1:]
+    def send_email(self, email_: EmailStr, subject: str, message: str) -> None:
+        host = 'smtp.' + \
+            settings.email.login[settings.email.login.index('@') + 1:]
+        host = 'smtp.yandex.ru'
 
         msg = MIMEText(f'{message}', 'plain', 'utf-8')
         msg['Subject'] = Header(subject, 'utf-8')
         msg['From'] = settings.email.login
-        msg['To'] = email
+        msg['To'] = email_
 
-        s = smtplib.SMTP('smtp.' + f'{host}', 587, timeout=10)
+        s = smtplib.SMTP(host, 587, timeout=10)
 
         s.starttls()
         s.login(settings.email.login, settings.email.password)
-        s.sendmail(msg['From'], email, msg.as_string())
+
+        s.sendmail(msg['From'], settings.email.login, msg.as_string())
         s.quit()
 
 

@@ -24,12 +24,12 @@ async def change_password(
     user = await user_service.user_store.get(user_change_password.login)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    user.hashed_password = PasswordUtils.hash_password(
-        user_change_password.hashed_password)
     user_input = UserInput(
         login=user.login,
         email=user.email,
-        hashed_password=user.hashed_password,
+        hashed_password=PasswordUtils.hash_password(
+            user_change_password.hashed_password
+        ),
         full_name=user.full_name,
         active=user.active,
         role=IdSchema(
@@ -38,7 +38,7 @@ async def change_password(
     )
     await user_service.user_store.edit(user_input)
     email_service.send_email(
-        email=user_input.email,
+        email_=user_input.email,
         subject='Смена пароля',
         message=f'Новый пароль от аккаунта {user.login}: {user_change_password.hashed_password}'
     )

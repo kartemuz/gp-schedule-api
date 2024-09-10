@@ -116,7 +116,7 @@ class ScheduleRepos(ScheduleStore):
                     discipline=await discipline_repos.get(schedule_db.discipline_id),
                     room=await room_repos.get(schedule_db.room_id),
                     schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
-                    schedule_teacher=await schedule_teacher_repos.get(schedule_db.schedule_teacher.id)
+                    schedule_teacher=await schedule_teacher_repos.get(schedule_db.schedule_teacher.id) if schedule_db.schedule_teacher else None
                 )
             else:
                 result = None
