@@ -167,7 +167,7 @@ class Change(BaseModel):
 class ScheduleTeacher(BaseModel):
     id: Optional[int]
     teacher: Teacher
-    change: Change
+    change: Optional[Change]
 
 
 class Schedule(BaseModel):

@@ -6,6 +6,7 @@ from src.constants import ExportConstants
 from src.schedule.service import schedule_service
 from src.schedule.schemas import Teacher, Direction, Discipline, Group
 from typing import List
+from src.schemas import FullName
 
 
 class ExportService:
@@ -129,7 +130,7 @@ class ExportService:
             [
                 'Дата',
                 'Время начала',
-                'Время окончания'
+                'Время окончания',
                 'Название дисциплины',
                 'Преподаватель',
                 'Кабинет'
@@ -138,7 +139,14 @@ class ExportService:
 
         for s in schedules:
             if group_id in [g.id for g in s.flow.groups]:
-                teacher_full_name = s.schedule_teacher.change.teacher.full_name if s.schedule_teacher.change else s.schedule_teacher.teacher.full_name
+                if s.schedule_teacher:
+                    if s.schedule_teacher.change:
+                        teacher_full_name = s.schedule_teacher.change.teacher.full_name
+                    else:
+                        teacher_full_name = s.schedule_teacher.teacher.full_name
+                else:
+                    teacher_full_name = FullName(
+                        name=None, surname=None, patronymic=None)
                 ws.append(
                     [
                         s.date_,
