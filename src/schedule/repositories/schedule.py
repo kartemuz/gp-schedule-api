@@ -65,10 +65,13 @@ class ScheduleRepos(ScheduleStore):
             )
             query_result = await session.execute(query)
             schedules_db = query_result.scalars()
+            used_id = []
             for sc_db in schedules_db:
-                result.append(
-                    await self.get(sc_db.id)
-                )
+                if sc_db.id not in used_id:
+                    result.append(
+                        await self.get(sc_db.id)
+                    )
+                used_id.append(sc_db.id)
         return result
 
     async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
