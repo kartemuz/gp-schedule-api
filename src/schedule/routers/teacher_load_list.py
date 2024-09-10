@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import TeacherLoadList, TeacherLoadListInput
+from src.schedule.schemas import TeacherLoadList, TeacherLoadListInput, LoadList
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -25,7 +25,8 @@ async def get_teacher_load_list(
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif load_list_id:
-        pass
+        load: LoadList = await schedule_service.load_list_store.get(load_list_id)
+        result: List[TeacherLoadList] = load.teacher_load_lists
     else:
         result: List[TeacherLoadList] = await schedule_service.teacher_load_list_store.get_all()
     return result
