@@ -36,3 +36,12 @@ async def import_type_direction(file: UploadFile = File(...),
     path = await FileUtils.save_file(file)
     await import_service.import_type_direction(path)
     FileUtils.remove_file(path)
+
+
+@import_router.post('/room')
+async def import_room(file: UploadFile = File(...),
+                      auth_user: User = Depends(get_auth_active_user)
+                      ) -> None:
+    path = await FileUtils.save_file(file)
+    await import_service.import_room(path)
+    FileUtils.remove_file(path)

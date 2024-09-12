@@ -33,6 +33,21 @@ async def add_schedule_list(
     schedule_list: ScheduleListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
+    if schedule_list.active:
+        active_schedule_list = await schedule_service.schedule_list_store.get_active()
+        if active_schedule_list:
+            active_s_l_input = ScheduleListInput(
+                id=active_schedule_list.id,
+                name=active_schedule_list.name,
+                date_start=active_schedule_list.date_start,
+                date_end=active_schedule_list.date_end,
+                active=False,
+                load_list=IdSchema(
+                    id=active_schedule_list.load_list.id
+                )
+            )
+            await schedule_service.schedule_list_store.edit(active_s_l_input)
+
     return await schedule_service.schedule_list_store.add(schedule_list)
 
 
@@ -41,6 +56,20 @@ async def edit_schedule_list(
     schedule_list: ScheduleListInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
+    if schedule_list.active:
+        active_schedule_list = await schedule_service.schedule_list_store.get_active()
+        if active_schedule_list:
+            active_s_l_input = ScheduleListInput(
+                id=active_schedule_list.id,
+                name=active_schedule_list.name,
+                date_start=active_schedule_list.date_start,
+                date_end=active_schedule_list.date_end,
+                active=False,
+                load_list=IdSchema(
+                    id=active_schedule_list.load_list.id
+                )
+            )
+            await schedule_service.schedule_list_store.edit(active_s_l_input)
     await schedule_service.schedule_list_store.edit(schedule_list)
 
 

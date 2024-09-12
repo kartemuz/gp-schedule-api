@@ -3,11 +3,22 @@ from pathlib import Path
 from src.config import settings
 from pathlib import Path
 from src.schedule.service import schedule_service
-from src.schedule.schemas import Teacher, TypeLesson, TypeDirection
+from src.schedule.schemas import Teacher, TypeLesson, TypeDirection, Room
 from src.schemas import FullName
 
 
 class ImportService:
+    async def import_room(self, path: Path) -> None:
+        wb = load_workbook(path)
+        ws = wb.active
+        for r in range(1, ws.max_column):
+            await schedule_service.room_store.add(
+                Room(
+                    id=ws.cell(row=r, column=1).value,
+                    name=ws.cell(row=r, column=2).value
+                )
+            )
+
     async def import_teacher(self, path: Path) -> None:
         wb = load_workbook(path)
         ws = wb.active

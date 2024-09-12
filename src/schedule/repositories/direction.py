@@ -3,7 +3,7 @@ from typing import Optional, List
 from src.schedule.schemas import Direction, Discipline, TypeDirection, DirectionInput
 from src.schemas import IdSchema
 from src.schedule.models import DirectionDB, DisciplineDirectionDB
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from src.database import session_factory
 from sqlalchemy.orm import selectinload
 from src.utils import DBUtils
@@ -104,9 +104,9 @@ class DirectionRepos(DirectionStore):
         await DBUtils.insert_new(obj_db)
 
         async with session_factory() as session:
-            query = select(DirectionDB).where(DirectionDB.name == obj.name)
+            query = select(DirectionDB.id).where(DirectionDB.name == obj.name)
             query_result = await session.execute(query)
-            result = IdSchema(id=query_result.scalar().id)
+            result = IdSchema(id=query_result.scalar())
 
         for disc in obj.disciplines:
             disc_dir_db = DisciplineDirectionDB(
@@ -131,6 +131,31 @@ class DirectionRepos(DirectionStore):
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')
         await DBUtils.update_by_id(model=DirectionDB, **data)
+
+        direction = await self.get(obj.id)
+        disciplines_ids = [d.id for d in direction.disciplines]
+        print(disciplines_ids)
+
+        new_discipline_ids = [d.id for d in obj.disciplines]
+        for id in disciplines_ids:
+            async with session_factory() as session:
+                query = select(DisciplineDirectionDB).where(
+                    and_(
+                        DisciplineDirectionDB.discipline_id == id,
+                        DisciplineDirectionDB.direction_id == obj.id
+                    )
+                )
+                query_result = await session.execute(query)
+                disc_dir_db = query_result.scalar()
+                await session.delete(disc_dir_db)
+                await session.commit()
+        for id in new_discipline_ids:
+            disc_dir_db = DisciplineDirectionDB(
+                id=None,
+                discipline_id=id,
+                direction_id=obj.id
+            )
+            await DBUtils.insert_new(disc_dir_db)
 
 
 direction_repos = DirectionRepos()

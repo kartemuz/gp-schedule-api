@@ -9,7 +9,7 @@ class FullName(BaseModel):
 
 
 class IdSchema(BaseModel):
-    id: int
+    id: Optional[int]
 
 
 class NameSchema(BaseModel):

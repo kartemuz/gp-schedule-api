@@ -11,8 +11,18 @@ from src.schedule.repositories.load_list import load_list_repos
 
 
 class ScheduleListRepos(ScheduleListStore):
-    async def get_active(sefl) -> None:
-        pass
+    async def get_active(sefl) -> Optional[ScheduleList]:
+        async with session_factory() as session:
+            query = select(ScheduleListDB.id).where(
+                ScheduleListDB.active
+            )
+            query_result = await session.execute(query)
+            id = query_result.scalar()
+            if id:
+                result = await sefl.get(id)
+            else:
+                result = None
+        return result
 
     async def get(self, id: int) -> Optional[ScheduleList]:
         async with session_factory() as session:
