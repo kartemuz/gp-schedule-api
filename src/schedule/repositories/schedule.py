@@ -143,24 +143,26 @@ class ScheduleRepos(ScheduleStore):
             ).where(ScheduleDB.id == id)
             query_result = await session.execute(query)
             schedule_db = query_result.scalar()
-            schedule_teachers = []
             if schedule_db:
+                schedule_teachers = []
                 for s_t_db in schedule_db.schedule_teachers:
                     schedule_teachers.append(
                         await schedule_teacher_repos.get(s_t_db.id)
                     )
-                    result = Schedule(
-                        id=schedule_db.id,
-                        date_=schedule_db.date_,
-                        time_start=schedule_db.time_start,
-                        time_end=schedule_db.time_end,
-                        type_lesson=await type_lesson_repos.get(schedule_db.type_lesson_id),
-                        flow=await flow_repos.get(schedule_db.flow_id),
-                        discipline=await discipline_repos.get(schedule_db.discipline_id),
-                        room=await room_repos.get(schedule_db.room_id),
-                        schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
-                        schedule_teachers=schedule_teachers
-                    )
+                result = Schedule(
+                    id=schedule_db.id,
+                    date_=schedule_db.date_,
+                    time_start=schedule_db.time_start,
+                    time_end=schedule_db.time_end,
+                    type_lesson=await type_lesson_repos.get(schedule_db.type_lesson_id),
+                    flow=await flow_repos.get(schedule_db.flow_id),
+                    discipline=await discipline_repos.get(schedule_db.discipline_id),
+                    room=await room_repos.get(schedule_db.room_id),
+                    schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
+                    schedule_teachers=schedule_teachers
+                )
+            else:
+                result = None
         return result
 
     async def get_all(self) -> List[Schedule]:

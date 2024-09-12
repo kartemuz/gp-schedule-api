@@ -92,6 +92,7 @@ async def get_schedule(
                 result.append(s)
     else:
         result: List[Schedule] = await schedule_service.schedule_store.get_all()
+        print(len(result))
     return result
 
 
