@@ -56,6 +56,7 @@ async def get_schedule(
     id: Optional[int] = None,
     group_id: Optional[int] = None,
     teacher_id: Optional[int] = None,
+    flow_id: Optional[int] = None,
     start_of_week: Optional[str] = get_cur_str_date()
 ) -> Schedule | List[Schedule]:
 
@@ -67,23 +68,28 @@ async def get_schedule(
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif group_id:
-        result: Schedule = await schedule_service.schedule_store.get_by_group_id_and_date(
+        schedules: List[Schedule] = await schedule_service.schedule_store.get_by_group_id_and_date(
             group_id=group_id,
             start_date=start_of_week,
             end_date=end_of_week
         )
-        if not result:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        result: List[Schedule] = []
+        for s in schedules:
+            if group_id in [g.id for g in s.flow.groups]:
+                result.append(s)
 
     elif teacher_id:
-        result: Schedule = await schedule_service.schedule_store.get_by_teacher_id_and_date(
+        result: List[Schedule] = await schedule_service.schedule_store.get_by_teacher_id_and_date(
             teacher_id=teacher_id,
             start_date=start_of_week,
             end_date=end_of_week
         )
-        if not result:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
+    elif flow_id:
+        schedules: List[Schedule] = await schedule_service.schedule_store.get_all()
+        result: List[Schedule] = []
+        for s in schedules:
+            if flow_id == s.flow.id:
+                result.append(s)
     else:
         result: List[Schedule] = await schedule_service.schedule_store.get_all()
     return result

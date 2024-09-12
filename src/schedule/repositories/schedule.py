@@ -118,7 +118,7 @@ class ScheduleRepos(ScheduleStore):
                     date_=schedule_db.date_,
                     time_start=schedule_db.time_start,
                     time_end=schedule_db.time_end,
-                    type_lesson=await type_lesson_repos.get(schedule_db.id),
+                    type_lesson=await type_lesson_repos.get(schedule_db.type_lesson_id),
                     flow=await flow_repos.get(schedule_db.flow_id),
                     discipline=await discipline_repos.get(schedule_db.discipline_id),
                     room=await room_repos.get(schedule_db.room_id),
@@ -172,9 +172,9 @@ class ScheduleRepos(ScheduleStore):
             result = IdSchema(
                 id=query_result.scalar()
             )
-        for s_t in obj.schedule_teachers:
-            await schedule_teacher_repos.add(s_t, schedule_id=result)
-        return result
+            for s_t in obj.schedule_teachers:
+                await schedule_teacher_repos.add(s_t, schedule_id=result.id)
+            return result
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(ScheduleDB, id)

@@ -7,7 +7,7 @@ from src.utils import DBUtils
 from src.schedule.repositories.teacher import teacher_repos
 from src.schedule.repositories.change import change_repos
 from src.database import session_factory
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 
 
@@ -51,15 +51,17 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
             query = select(
                 ScheduleTeacherDB.id
             ).where(
-                ScheduleTeacherDB.teacher_id == obj.teacher.id,
-                ScheduleTeacherDB.schedule_id == schedule_id
+                and_(
+                    ScheduleTeacherDB.teacher_id == obj.teacher.id,
+                    ScheduleTeacherDB.schedule_id == schedule_id
+                )
             )
             query_result = await session.execute(query)
             result = IdSchema(
                 id=query_result.scalar()
             )
         if obj.change:
-            await change_repos.add(obj.change)
+            await change_repos.add(obj.change, result.id)
         return result
 
     async def delete(self, id: int) -> None:

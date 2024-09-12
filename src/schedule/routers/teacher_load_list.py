@@ -21,12 +21,16 @@ async def get_teacher_load_list(
     auth_user: User = Depends(get_auth_active_user)
 ) -> TeacherLoadList | List[TeacherLoadList]:
     if id:
-        result: TeacherLoadList = await schedule_service.teacher_load_list_store.get(id)
+        result: Optional[TeacherLoadList] = await schedule_service.teacher_load_list_store.get(id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif load_list_id:
-        load: LoadList = await schedule_service.load_list_store.get(load_list_id)
-        result: List[TeacherLoadList] = load.teacher_load_lists
+        load_list: LoadList = await schedule_service.load_list_store.get(load_list_id)
+        if load_list:
+            result: List[TeacherLoadList] = load_list.teacher_load_lists
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
     else:
         result: List[TeacherLoadList] = await schedule_service.teacher_load_list_store.get_all()
     return result

@@ -44,7 +44,7 @@ class ScheduleListInput(BaseModel):
     id: Optional[int]
     name: str
     date_start: date
-    date_ent: date
+    date_end: date
     active: bool
     load_list: IdSchema
 

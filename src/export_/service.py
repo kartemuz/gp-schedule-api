@@ -139,22 +139,20 @@ class ExportService:
 
         for s in schedules:
             if group_id in [g.id for g in s.flow.groups]:
-                if s.schedule_teacher:
-                    if s.schedule_teacher.change:
-                        teacher_full_name = s.schedule_teacher.change.teacher.full_name
+                teachers = ''
+                for s_t in s.schedule_teachers:
+                    if s_t.change:
+                        t = s_t.change.teacher.full_name
                     else:
-                        teacher_full_name = s.schedule_teacher.teacher.full_name
-                else:
-                    teacher_full_name = FullName(
-                        name=None, surname=None, patronymic=None
-                    )
+                        t = s_t.teacher.full_name
+                    teachers += f'{t.surname} {t.name} {t.patronymic}'
                 ws.append(
                     [
                         s.date_,
                         s.time_start,
                         s.time_end,
                         s.discipline.name,
-                        f'{teacher_full_name.surname} {teacher_full_name.name} {teacher_full_name.patronymic}',
+                        teachers,
                         s.room.name
                     ]
                 )

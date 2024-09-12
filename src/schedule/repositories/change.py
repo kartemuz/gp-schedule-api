@@ -5,7 +5,7 @@ from src.schedule.stores import ChangeStore
 from src.schedule.models import ChangeDB
 from src.utils import DBUtils
 from src.database import session_factory
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from src.schedule.repositories.teacher import teacher_repos
 
 
@@ -43,8 +43,10 @@ class ChangeRepos(ChangeStore):
             query = select(
                 ChangeDB.id
             ).where(
-                ChangeDB.teacher_id == obj.teacher.id,
-                ChangeDB.schedule_teacher_id == schedule_teacher_id
+                and_(
+                    ChangeDB.teacher_id == obj.teacher.id,
+                    ChangeDB.schedule_teacher_id == schedule_teacher_id
+                )
             )
             query_result = await session.execute(query)
             result = IdSchema(
