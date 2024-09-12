@@ -134,6 +134,7 @@ class ScheduleRepos(ScheduleStore):
         return result
 
     async def get(self, id: int) -> Optional[Schedule]:
+        result: Optional[Schedule] = None
         async with session_factory() as session:
             query = select(ScheduleDB).options(
                 selectinload(
@@ -160,8 +161,6 @@ class ScheduleRepos(ScheduleStore):
                         schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
                         schedule_teachers=schedule_teachers
                     )
-            else:
-                result = None
         return result
 
     async def get_all(self) -> List[Schedule]:
