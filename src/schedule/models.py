@@ -294,7 +294,8 @@ class ScheduleDB(BaseDB):
     )
 
     schedule_teachers: Mapped[List['ScheduleTeacherDB']] = relationship(
-        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN,
+        cascade=DBConstants.RELATIONSHIP_CASCADE
     )
 
 
