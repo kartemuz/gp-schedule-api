@@ -69,7 +69,7 @@ async def edit_user(user: UserInput, auth_user: User = Depends(get_auth_active_u
 
 @user_router.post('/delete')
 async def delete_user(login: str, auth_user: User = Depends(get_auth_active_user)) -> None:
-    await user_service.user_store.delete_user(login)
+    await user_service.user_store.delete(login)
 
 
 opportunity_router = APIRouter(

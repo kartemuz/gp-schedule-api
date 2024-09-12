@@ -101,11 +101,20 @@ class ScheduleRepos(ScheduleStore):
                     ScheduleDB.schedule_teachers
                 ).selectinload(
                     ScheduleTeacherDB.teacher
-                    # ScheduleTeacherDB.change
+                ),
+
+                selectinload(
+                    ScheduleDB.schedule_teachers
+                ).selectinload(
+                    ScheduleTeacherDB.change
                 )
             ).where(
                 and_(
-                    TeacherDB.id == teacher_id,
+                    or_(
+                        TeacherDB.id == teacher_id,
+                        ChangeDB.teacher_id == teacher_id
+                    ),
+
                     ScheduleDB.date_.between(start_date, end_date)
                 )
             )
