@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional, List, Final
 from src.auth.dependencies import get_auth_active_user
 from src.user.schemas import User
-from src.schedule.schemas import Schedule, ScheduleInput
+from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
@@ -57,6 +57,7 @@ async def get_schedule(
     group_id: Optional[int] = None,
     teacher_id: Optional[int] = None,
     flow_id: Optional[int] = None,
+    schedule_list_id: Optional[int] = None,
     start_of_week: Optional[str] = get_cur_str_date()
 ) -> Schedule | List[Schedule]:
 
@@ -90,9 +91,15 @@ async def get_schedule(
         for s in schedules:
             if flow_id == s.flow.id:
                 result.append(s)
+    elif schedule_list_id:
+        result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list)
     else:
-        result: List[Schedule] = await schedule_service.schedule_store.get_all()
-        print(len(result))
+        # result: List[Schedule] = await schedule_service.schedule_store.get_all()
+        schedule_list: Optional[ScheduleList] = await schedule_service.schedule_list_store.get_active()
+        if schedule_list:
+            result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list.id)
+        else:
+            result: List[Schedule] = []
     return result
 
 

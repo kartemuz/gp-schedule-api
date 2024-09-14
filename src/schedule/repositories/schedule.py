@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import Schedule, ScheduleInput
+from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleStore
 from src.schedule.models import ScheduleDB, FlowDB, ChangeDB, FlowGroupDB, ScheduleTeacherDB, TeacherDB
