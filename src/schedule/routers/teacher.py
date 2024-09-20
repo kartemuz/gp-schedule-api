@@ -45,18 +45,20 @@ async def get_free_teacher(
     used_teacher_ids = []
     for s in schedules:
         schedule_teachers = s.schedule_teachers
-        for s in schedule_teachers:
-            change = s.change
+        for s_t in schedule_teachers:
+            print(s.id, s_t.teacher.id)
+            change = s_t.change
             if change:
                 used_teacher_ids.append(
                     change.teacher.id
                 )
             else:
                 used_teacher_ids.append(
-                    s.teacher.id
+                    s_t.teacher.id
                 )
     used_teacher_ids: Set[int] = set(used_teacher_ids)
     free_teacher_ids: Set[int] = all_teacher_ids - used_teacher_ids
+    print(used_teacher_ids, free_teacher_ids, all_teacher_ids)
 
     for t_l in schedule_list.load_list.teacher_load_lists:
         if t_l.teacher.id in free_teacher_ids:
