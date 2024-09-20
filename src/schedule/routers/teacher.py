@@ -57,7 +57,6 @@ async def get_free_teacher(
                 )
     used_teacher_ids: Set[int] = set(used_teacher_ids)
     free_teacher_ids: Set[int] = all_teacher_ids - used_teacher_ids
-    print(used_teacher_ids, free_teacher_ids, all_teacher_ids)
 
     for t_l in schedule_list.load_list.teacher_load_lists:
         if t_l.teacher.id in free_teacher_ids:
