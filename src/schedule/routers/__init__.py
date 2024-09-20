@@ -85,11 +85,11 @@ async def get_schedule(
             start_date=start_of_week,
             end_date=end_of_week
         )
-    elif flow_id:
+    elif flow_id and schedule_list_id:
         schedules: List[Schedule] = await schedule_service.schedule_store.get_all()
         result: List[Schedule] = []
         for s in schedules:
-            if flow_id == s.flow.id:
+            if flow_id == s.flow.id and schedule_list_id == s.schedule_list.id:
                 result.append(s)
     elif schedule_list_id:
         result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list_id)
