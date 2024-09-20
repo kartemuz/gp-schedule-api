@@ -92,7 +92,7 @@ async def get_schedule(
             if flow_id == s.flow.id:
                 result.append(s)
     elif schedule_list_id:
-        result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list)
+        result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list_id)
     else:
         # result: List[Schedule] = await schedule_service.schedule_store.get_all()
         schedule_list: Optional[ScheduleList] = await schedule_service.schedule_list_store.get_active()
