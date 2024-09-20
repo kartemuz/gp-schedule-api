@@ -46,7 +46,6 @@ async def get_free_teacher(
     for s in schedules:
         schedule_teachers = s.schedule_teachers
         for s_t in schedule_teachers:
-            print(s.id, s_t.teacher.id)
             change = s_t.change
             if change:
                 used_teacher_ids.append(
