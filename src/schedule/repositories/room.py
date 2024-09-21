@@ -12,7 +12,8 @@ class RoomRepos(RoomStore):
         if obj_db:
             result = Room(
                 id=obj_db.id,
-                name=obj_db.name
+                name=obj_db.name,
+                # profile=obj.profile
             )
         else:
             result = None
@@ -25,7 +26,8 @@ class RoomRepos(RoomStore):
             result.append(
                 Room(
                     id=obj_db.id,
-                    name=obj_db.name
+                    name=obj_db.name,
+                    # profile=obj.profile
                 )
             )
         return result
@@ -33,7 +35,8 @@ class RoomRepos(RoomStore):
     async def add(self, obj: Room) -> IdSchema:
         obj_db = RoomDB(
             id=obj.id,
-            name=obj.name
+            name=obj.name,
+            # profile=obj.profile
         )
         await DBUtils.insert_new(obj_db)
         obj_db: RoomDB = await DBUtils.select_by_name(RoomDB, obj.name)
@@ -45,7 +48,8 @@ class RoomRepos(RoomStore):
     async def edit(self, obj: Room) -> None:
         obj_db = RoomDB(
             id=obj.id,
-            name=obj.name
+            name=obj.name,
+            # profile=obj.profile
         )
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')

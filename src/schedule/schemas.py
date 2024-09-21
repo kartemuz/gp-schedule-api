@@ -16,7 +16,7 @@ class FreeObjectInput(BaseModel):
 class DirectionInput(BaseModel):
     id: Optional[int]
     name: str
-    id_sys: int
+    id_sys: str
     type_direction: IdSchema
     hours: int
     disciplines: List[IdSchema]
@@ -130,6 +130,7 @@ class Teacher(BaseModel):
 class Room(BaseModel):
     id: Optional[int]
     name: str
+    # profile: str
 
 
 class TypeLesson(BaseModel):

@@ -11,7 +11,7 @@ class ImportService:
     async def import_room(self, path: Path) -> None:
         wb = load_workbook(path)
         ws = wb.active
-        for r in range(1, ws.max_column):
+        for r in range(2, ws.max_column):
             await schedule_service.room_store.add(
                 Room(
                     id=ws.cell(row=r, column=1).value,
@@ -22,7 +22,7 @@ class ImportService:
     async def import_teacher(self, path: Path) -> None:
         wb = load_workbook(path)
         ws = wb.active
-        for r in range(1, ws.max_column):
+        for r in range(2, ws.max_column):
             await schedule_service.teacher_store.add(
                 Teacher(
                     id=ws.cell(row=r, column=1).value,
@@ -31,15 +31,15 @@ class ImportService:
                         name=ws.cell(row=r, column=3).value,
                         patronymic=ws.cell(row=r, column=4).value,
                     ),
-                    position=ws.cell(row=r, column=5).value,
-                    profile=ws.cell(row=r, column=6).value
+                    position=str(ws.cell(row=r, column=5).value),
+                    profile=str(ws.cell(row=r, column=6).value)
                 )
             )
 
     async def import_type_lesson(self, path: Path) -> None:
         wb = load_workbook(path)
         ws = wb.active
-        for r in range(1, ws.max_column):
+        for r in range(2, ws.max_column):
             await schedule_service.type_lesson_store.add(
                 TypeLesson(
                     id=ws.cell(row=r, column=1).value,
@@ -50,7 +50,7 @@ class ImportService:
     async def import_type_direction(self, path: Path) -> None:
         wb = load_workbook(path)
         ws = wb.active
-        for r in range(1, ws.max_column):
+        for r in range(2, ws.max_column):
             await schedule_service.type_direction_store.add(
                 TypeDirection(
                     id=ws.cell(row=r, column=1).value,

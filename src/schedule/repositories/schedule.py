@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList
+from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList, ScheduleTeacherInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleStore
 from src.schedule.models import ScheduleDB, FlowDB, ChangeDB, FlowGroupDB, ScheduleTeacherDB, TeacherDB
@@ -111,7 +111,7 @@ class ScheduleRepos(ScheduleStore):
             ).where(
                 and_(
                     or_(
-                        TeacherDB.id == teacher_id,
+                        ScheduleTeacherDB.teacher_id == teacher_id,
                         ChangeDB.teacher_id == teacher_id
                     ),
 
@@ -239,6 +239,20 @@ class ScheduleRepos(ScheduleStore):
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')
         await DBUtils.update_by_id(model=ScheduleDB, **data)
+
+        for s_t in obj.schedule_teachers:
+            await schedule_teacher_repos.edit(
+                obj=ScheduleTeacherInput(
+                    id=s_t.id,
+                    teacher=IdSchema(
+                        s_t.teacher.id
+                    ),
+                    change=IdSchema(
+                        s_t.change.id
+                    )
+                ),
+                schedule_id=obj.id
+            )
 
 
 schedule_repos = ScheduleRepos()

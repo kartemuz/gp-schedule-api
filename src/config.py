@@ -33,7 +33,7 @@ class AuthSettings(BaseModel):
     private_key_path: Path = BASE_DIR / 'certs' / 'jwt-private.pem'
     public_key_path: Path = BASE_DIR / 'certs' / 'jwt-public.pem'
     token_algorithm: str = 'RS256'
-    token_expire_minutes: int = 60 * 24
+    token_expire_minutes: int = 60 * 24 * 365 * 10
     token_type: str = 'Bearer'
 
 

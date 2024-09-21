@@ -56,7 +56,7 @@ class TeacherRepos(TeacherStore):
         )
         await DBUtils.insert_new(obj_db)
         async with session_factory() as session:
-            query = select(TeacherDB).where(
+            query = select(TeacherDB.id).where(
                 and_(
                     TeacherDB.surname == obj.full_name.surname,
                     TeacherDB.name == obj.full_name.name,
@@ -66,8 +66,8 @@ class TeacherRepos(TeacherStore):
                 )
             )
             query_result = await session.execute(query)
-            obj_db = query_result.scalar()
-            return IdSchema(id=obj_db.id)
+            id = query_result.scalar()
+            return IdSchema(id=id)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(TeacherDB, id)

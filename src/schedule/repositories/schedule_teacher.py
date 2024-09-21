@@ -1,5 +1,5 @@
 from typing import Optional, List
-from src.schedule.schemas import ScheduleTeacher, ScheduleTeacherInput
+from src.schedule.schemas import ScheduleTeacher, ScheduleTeacherInput, ChangeInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleTeacherStore
 from src.schedule.models import ScheduleTeacherDB
@@ -76,6 +76,16 @@ class ScheduleTeacherRepos(ScheduleTeacherStore):
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')
         await DBUtils.update_by_id(model=ScheduleTeacherDB, **data)
+        ch = obj.change
+        await change_repos.edit(
+            obj=ChangeInput(
+                id=ch.id,
+                teacher=IdSchema(
+                    obj.teacher.id
+                )
+            ),
+            schedule_teacher_id=obj.id
+        )
 
 
 schedule_teacher_repos = ScheduleTeacherRepos()
