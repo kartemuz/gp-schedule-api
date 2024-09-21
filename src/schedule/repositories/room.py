@@ -13,7 +13,7 @@ class RoomRepos(RoomStore):
             result = Room(
                 id=obj_db.id,
                 name=obj_db.name,
-                # profile=obj.profile
+                profile=obj.profile
             )
         else:
             result = None
@@ -27,7 +27,7 @@ class RoomRepos(RoomStore):
                 Room(
                     id=obj_db.id,
                     name=obj_db.name,
-                    # profile=obj.profile
+                    profile=obj_db.profile
                 )
             )
         return result
@@ -36,7 +36,7 @@ class RoomRepos(RoomStore):
         obj_db = RoomDB(
             id=obj.id,
             name=obj.name,
-            # profile=obj.profile
+            profile=obj.profile
         )
         await DBUtils.insert_new(obj_db)
         obj_db: RoomDB = await DBUtils.select_by_name(RoomDB, obj.name)
@@ -49,7 +49,7 @@ class RoomRepos(RoomStore):
         obj_db = RoomDB(
             id=obj.id,
             name=obj.name,
-            # profile=obj.profile
+            profile=obj.profile
         )
         data = obj_db.__dict__.copy()
         data.pop('_sa_instance_state')

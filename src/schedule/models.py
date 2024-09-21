@@ -228,8 +228,8 @@ class RoomDB(BaseDB):
     id: Mapped[int_pk]
     name: Mapped[str] = mapped_column(String(DBConstants.SHORT_STRING_LENGTH),
                                       nullable=False, unique=True)
-    # profile: Mapped[str] = mapped_column(
-    #     String(DBConstants.SHORT_STRING_LENGTH))
+    profile: Mapped[str] = mapped_column(
+        String(DBConstants.SHORT_STRING_LENGTH), nullable=False)
 
 
 class ScheduleListDB(BaseDB):

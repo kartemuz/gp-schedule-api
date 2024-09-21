@@ -130,7 +130,7 @@ class Teacher(BaseModel):
 class Room(BaseModel):
     id: Optional[int]
     name: str
-    # profile: str
+    profile: str
 
 
 class TypeLesson(BaseModel):
