@@ -13,7 +13,7 @@ class RoomRepos(RoomStore):
             result = Room(
                 id=obj_db.id,
                 name=obj_db.name,
-                profile=obj.profile
+                profile=obj_db.profile
             )
         else:
             result = None
