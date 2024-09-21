@@ -97,11 +97,9 @@ class ScheduleRepos(ScheduleStore):
         result: List[Schedule] = []
         async with session_factory() as session:
             query = select(ScheduleDB).options(
-                selectinload(
-                    ScheduleDB.schedule_teachers
-                ).selectinload(
-                    ScheduleTeacherDB.teacher
-                ),
+                # selectinload(
+                #     ScheduleDB.schedule_teachers
+                # ),
 
                 selectinload(
                     ScheduleDB.schedule_teachers
@@ -117,6 +115,8 @@ class ScheduleRepos(ScheduleStore):
 
                     ScheduleDB.date_.between(start_date, end_date)
                 )
+            ).distinct(
+                ScheduleDB.id
             )
             query_result = await session.execute(query)
             schedules_db = query_result.scalars()
