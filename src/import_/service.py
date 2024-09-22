@@ -16,7 +16,7 @@ class ImportService:
                 Room(
                     id=ws.cell(row=r, column=1).value,
                     name=ws.cell(row=r, column=2).value,
-                    profile=ws.cell(row=r, column=2).value
+                    profile=ws.cell(row=r, column=3).value
                 )
             )
 
