@@ -58,6 +58,7 @@ async def get_schedule(
     teacher_id: Optional[int] = None,
     flow_id: Optional[int] = None,
     schedule_list_id: Optional[int] = None,
+    change_id: Optional[int] = None,
     start_of_week: Optional[str] = get_cur_str_date()
 ) -> Schedule | List[Schedule]:
 
@@ -93,6 +94,8 @@ async def get_schedule(
                 result.append(s)
     elif schedule_list_id:
         result: List[Schedule] = await schedule_service.schedule_store.get_by_schedule_list_id(schedule_list_id)
+    elif change_id:
+        result: Optional[Schedule] = await schedule_service.schedule_store.get_by_change_id(change_id)
     else:
         # result: List[Schedule] = await schedule_service.schedule_store.get_all()
         schedule_list: Optional[ScheduleList] = await schedule_service.schedule_list_store.get_active()

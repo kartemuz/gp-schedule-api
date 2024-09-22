@@ -9,7 +9,7 @@ class EmailService:
     def send_email(self, email_: EmailStr, subject: str, message: str) -> None:
         # host = 'smtp.' + \
         #     settings.email.login[settings.email.login.index('@') + 1:]
-        host = 'smtp.yandex.ru'
+        host = 'smtp.gmail.com'
 
         msg = MIMEText(f'{message}', 'plain', 'utf-8')
         msg['Subject'] = Header(subject, 'utf-8')

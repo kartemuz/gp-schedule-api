@@ -17,6 +17,21 @@ from datetime import time, date
 
 
 class ScheduleRepos(ScheduleStore):
+    async def get_by_change_id(self, change_id: int) -> Optional[Schedule]:
+        async with session_factory() as session:
+            query = select(ScheduleTeacherDB).options(
+                selectinload(
+                    ScheduleTeacherDB.change
+                )
+            ).where(ChangeDB.id == change_id)
+            query_result = await session.execute(query)
+            s_t_db: Optional[ScheduleTeacherDB] = query_result.scalar()
+            if s_t_db:
+                result: Schedule = await self.get(s_t_db.schedule_id)
+            else:
+                result = None
+        return result
+
     async def get_by_schedule_list_id(self, schedule_list_id: int) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
