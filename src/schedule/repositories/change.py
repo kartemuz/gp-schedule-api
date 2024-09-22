@@ -10,6 +10,17 @@ from src.schedule.repositories.teacher import teacher_repos
 
 
 class ChangeRepos(ChangeStore):
+    async def delete_by_schedule_teacher_id(self, schedule_teacher_id: int) -> None:
+        async with session_factory() as session:
+            query = select(
+                ChangeDB.id
+            ).where(
+                ChangeDB.schedule_teacher_id == schedule_teacher_id
+            )
+            query_result = await session.execute(query)
+            id = query_result.scalar()
+            await DBUtils.delete_by_id(ChangeDB, id)
+
     async def get(self, id: int) -> Optional[Change]:
         schedule_teacher_db: Optional[Change] = await DBUtils.select_by_id(ChangeDB, id)
         if schedule_teacher_db:

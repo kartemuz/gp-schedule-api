@@ -262,7 +262,7 @@ class ScheduleRepos(ScheduleStore):
                 obj=ScheduleTeacherInput(
                     id=s_t.id,
                     teacher=IdSchema(
-                        s_t.teacher.id
+                        s_t.change.teacher.id
                     ),
                     change=IdSchema(
                         s_t.change.id

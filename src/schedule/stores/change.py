@@ -6,6 +6,10 @@ from src.schemas import IdSchema
 
 class ChangeStore(ABC):
     @abstractmethod
+    async def delete_by_schedule_teacher_id(self, schedule_teacher_id: int) -> None:
+        pass
+
+    @abstractmethod
     async def get(self, id: int) -> Optional[Change]:
         pass
 
