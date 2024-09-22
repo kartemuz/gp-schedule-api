@@ -47,8 +47,8 @@ async def edit_change(
 
 @change_router.get('/delete')
 async def delete_change(
-    id: int,
-    schedule_teacher_id: int,
+    id: Optional[int] = None,
+    schedule_teacher_id: Optional[int] = None,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
     if id:
