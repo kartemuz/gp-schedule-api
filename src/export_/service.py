@@ -133,7 +133,8 @@ class ExportService:
                 'Время окончания',
                 'Название дисциплины',
                 'Преподаватель',
-                'Кабинет'
+                'Кабинет',
+                'Тип занятия'
             ]
         )
 
@@ -153,7 +154,8 @@ class ExportService:
                         s.time_end,
                         s.discipline.name,
                         teachers,
-                        s.room.name
+                        s.room.name,
+                        s.type_lesson.name
                     ]
                 )
         wb.save(path)
