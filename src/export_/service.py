@@ -145,7 +145,7 @@ class ExportService:
                         t = s_t.change.teacher.full_name
                     else:
                         t = s_t.teacher.full_name
-                    teachers += f'{t.surname} {t.name} {t.patronymic}'
+                    teachers += f'{t.surname} {t.name} {t.patronymic}; '
                 ws.append(
                     [
                         s.date_,

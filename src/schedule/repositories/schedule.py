@@ -41,6 +41,10 @@ class ScheduleRepos(ScheduleStore):
                 selectinload(
                     ScheduleDB.schedule_teachers
                 )
+            ).order_by(
+                ScheduleDB.date_,
+                ScheduleDB.time_start,
+                ScheduleDB.time_end
             )
             query_result = await session.execute(query)
             schedules_db: List[ScheduleDB] = query_result.scalars()
