@@ -14,9 +14,9 @@ from sqlalchemy.orm import selectinload
 class ScheduleTeacherRepos(ScheduleTeacherStore):
     async def get(self, id: int) -> Optional[ScheduleTeacher]:
         async with session_factory() as session:
-            query = select(ScheduleTeacherDB).options(
+            query = select(ScheduleTeacherDB).where(ScheduleTeacherDB.id == id).options(
                 selectinload(ScheduleTeacherDB.change)
-            ).where(ScheduleTeacherDB.id == id)
+            )
             query_result = await session.execute(query)
             schedule_teacher_db = query_result.scalar()
 

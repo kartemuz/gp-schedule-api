@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Set
 from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList, ScheduleTeacherInput
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleStore
@@ -111,49 +111,51 @@ class ScheduleRepos(ScheduleStore):
     async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
-            query = select(ScheduleDB).options(
-                # selectinload(
-                #     ScheduleDB.schedule_teachers
-                # ),
+            # query = select(ScheduleTeacherDB).options(
+            #     selectinload(
+            #         ScheduleTeacherDB.change
+            #     )
+            # ).where(
+            #     or_(
+            #         ScheduleTeacherDB.teacher_id == teacher_id,
+            #         ChangeDB.teacher_id == teacher_id
+            #     )
+            # )
 
-                selectinload(
-                    ScheduleDB.schedule_teachers
-                ).selectinload(
-                    ScheduleTeacherDB.change
-                )
-            ).where(
-                and_(
-                    or_(
-                        ScheduleTeacherDB.teacher_id == teacher_id,
-                        ChangeDB.teacher_id == teacher_id
-                    ),
+            query = select(ScheduleTeacherDB).where(
+                ScheduleTeacherDB.teacher_id == teacher_id
+            )
 
-                    ScheduleDB.date_.between(start_date, end_date)
-                )
-            ).distinct(
-                ScheduleDB.id
+            query_result = await session.execute(query)
+            teacher_schedule_ids_list: List[int] = [
+                i.schedule_id for i in query_result.scalars()]
+
+            query = select(ChangeDB.schedule_teacher_id).where(
+                ChangeDB.teacher_id == teacher_id
+            )
+
+            query_result = await session.execute(query)
+
+            s_t_ids = query_result.scalars()
+            query = select(ScheduleTeacherDB.schedule_id).where(
+                ScheduleTeacherDB.id.in_(s_t_ids)
             )
             query_result = await session.execute(query)
-            schedules_db = query_result.scalars()
-            for sc_db in schedules_db:
-                schedule_teachers = []
-                for s_t_db in sc_db.schedule_teachers:
-                    schedule_teachers.append(
-                        await schedule_teacher_repos.get(s_t_db.id)
-                    )
+
+            teacher_schedule_ids_list += [i for i in query_result.scalars()]
+
+            query = select(ScheduleDB.id).where(
+                ScheduleDB.date_.between(start_date, end_date)
+            )
+            query_result = await session.execute(query)
+            all_schedule_ids: Set[int] = set(query_result.scalars())
+
+            teacher_schedule_ids: Set[int] = set(teacher_schedule_ids_list)
+            good_schedule_ids: Set[int] = all_schedule_ids & teacher_schedule_ids
+
+            for id in good_schedule_ids:
                 result.append(
-                    Schedule(
-                        id=sc_db.id,
-                        date_=sc_db.date_,
-                        time_start=sc_db.time_start,
-                        time_end=sc_db.time_end,
-                        type_lesson=await type_lesson_repos.get(sc_db.type_lesson_id),
-                        flow=await flow_repos.get(sc_db.flow_id),
-                        discipline=await discipline_repos.get(sc_db.discipline_id),
-                        room=await room_repos.get(sc_db.room_id),
-                        schedule_list=await schedule_list_repos.get(sc_db.schedule_list_id),
-                        schedule_teachers=schedule_teachers
-                    )
+                    await self.get(id)
                 )
         return result
 
