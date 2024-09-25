@@ -48,7 +48,7 @@ app.add_middleware(
 )
 
 context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-context.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
+context.load_cert_chain(certfile="../cert.pem", keyfile="../key.pem")
 
 
 if __name__ == "__main__":
