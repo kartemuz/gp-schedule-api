@@ -264,20 +264,23 @@ class ScheduleDB(BaseDB):
     time_start: Mapped[time] = mapped_column(nullable=False)
     time_end: Mapped[time] = mapped_column(nullable=False)
     type_lesson_id: Mapped[int] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(TypeLessonDB, 'id')),
+        ForeignKey(DBUtils.get_attribute_path(TypeLessonDB, 'id'),
+                   ondelete=DBConstants.ONDELETE_CASCADE),
         nullable=False
     )
     flow_id: Mapped[int] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(FlowDB, 'id')),
+        ForeignKey(DBUtils.get_attribute_path(FlowDB, 'id'),
+                   ondelete=DBConstants.ONDELETE_CASCADE),
         nullable=False
     )
     discipline_id: Mapped[int] = mapped_column(
-        ForeignKey(DBUtils.get_attribute_path(DisciplineDB, 'id')),
+        ForeignKey(DBUtils.get_attribute_path(DisciplineDB, 'id'),
+                   ondelete=DBConstants.ONDELETE_CASCADE),
         nullable=False
     )
     room_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(RoomDB, 'id')
+            DBUtils.get_attribute_path(RoomDB, 'id'), ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )

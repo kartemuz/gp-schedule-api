@@ -7,6 +7,7 @@ from src.export_.router import export_router
 from src.import_.router import import_router
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
+import ssl
 
 app = FastAPI(
     title='Schedule'
@@ -43,3 +44,11 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
+
+context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+context.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, ssl_context=context)
