@@ -7,6 +7,7 @@ from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
 from src.config import settings
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 
 flow_router = APIRouter(
@@ -70,4 +71,7 @@ async def delete_flow(
     id: int,
     auth_user: User = Depends(get_auth_active_user)
 ) -> None:
-    await schedule_service.flow_store.delete(id)
+    try:
+        await schedule_service.flow_store.delete(id)
+    except UnmappedInstanceError:
+        HTTPException(status_code=status.HTTP_404_NOT_FOUND)

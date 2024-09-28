@@ -173,8 +173,30 @@ class RoleRepos(RoleStore):
         return result
 
     async def edit(self, obj: RoleInput) -> None:
-        await self.delete(name=obj.name)
-        await self.add(obj=obj)
+
+        obj_db = RoleDB(
+            id=obj.id,
+            name=obj.name
+        )
+        data = obj_db.__dict__.copy()
+        data.pop('_sa_instance_state')
+        await DBUtils.update_by_id(model=RoleDB, **data)
+
+        async with session_factory() as session:
+            query = select(RoleOpportunityDB.id).where(
+                RoleOpportunityDB.role_id
+            )
+            query_result = await session.execute(query)
+            ids: List[int] = query_result.scalars()
+            for id in ids:
+                await DBUtils.delete_by_id(RoleOpportunityDB, id)
+
+        for op in obj.opportunities:
+            role_opportunity_db: RoleOpportunityDB = RoleOpportunityDB(
+                role_id=obj.id,
+                opportunity_id=op.id
+            )
+            await DBUtils.insert_new(role_opportunity_db)
 
     async def delete(self, id: int) -> None:
         await DBUtils.delete_by_id(model=RoleDB, id=id)

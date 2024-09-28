@@ -299,8 +299,7 @@ class ScheduleDB(BaseDB):
     )
 
     schedule_teachers: Mapped[List['ScheduleTeacherDB']] = relationship(
-        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN,
-        cascade=DBConstants.RELATIONSHIP_CASCADE
+        lazy=DBConstants.RELATIONSHIP_LAZY_SELECTIN
     )
 
 
@@ -309,13 +308,15 @@ class ScheduleTeacherDB(BaseDB):
     id: Mapped[int_pk]
     teacher_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(TeacherDB, 'id')
+            DBUtils.get_attribute_path(TeacherDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )
     schedule_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(ScheduleDB, 'id')
+            DBUtils.get_attribute_path(ScheduleDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )
@@ -333,13 +334,15 @@ class ChangeDB(BaseDB):
     id: Mapped[int_pk]
     schedule_teacher_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(ScheduleTeacherDB, 'id')
+            DBUtils.get_attribute_path(ScheduleTeacherDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )
     teacher_id: Mapped[int] = mapped_column(
         ForeignKey(
-            DBUtils.get_attribute_path(TeacherDB, 'id')
+            DBUtils.get_attribute_path(TeacherDB, 'id'),
+            ondelete=DBConstants.ONDELETE_CASCADE
         ),
         nullable=False
     )

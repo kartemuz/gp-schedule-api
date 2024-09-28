@@ -87,6 +87,15 @@ class FlowRepos(FlowStore):
         data.pop('_sa_instance_state')
         await DBUtils.update_by_id(model=FlowDB, **data)
 
+        async with session_factory() as session:
+            query = select(FlowGroupDB.id).where(
+                FlowGroupDB.flow_id == obj.id
+            )
+            query_result = await session.execute(query)
+            ids: List[int] = query_result.scalars()
+            for id in ids:
+                await DBUtils.delete_by_id(FlowGroupDB, id)
+
         for gr in obj.groups:
             fl_gr_db = FlowGroupDB(
                 flow_id=obj.id,
@@ -94,7 +103,7 @@ class FlowRepos(FlowStore):
             )
             data = fl_gr_db.__dict__.copy()
             data.pop('_sa_instance_state')
-            await DBUtils.update_by_id(model=FlowGroupDB, **data)
+            await DBUtils.insert_new(fl_gr_db)
 
 
 flow_repos = FlowRepos()
