@@ -90,7 +90,7 @@ class ScheduleRepos(ScheduleStore):
                 )
         return result
 
-    async def get_by_group_id_and_date(self, group_id: int, start_date: str, end_date: str) -> List[Schedule]:
+    async def get_by_group_id(self, group_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
             query = select(ScheduleDB).options(
@@ -98,7 +98,8 @@ class ScheduleRepos(ScheduleStore):
             ).where(
                 and_(
                     FlowGroupDB.group_id == group_id,
-                    ScheduleDB.date_.between(start_date, end_date)
+                    ScheduleDB.date_.between(start_date, end_date),
+                    ScheduleDB.schedule_list_id == schedule_list_id
                 )
             )
             query_result = await session.execute(query)
@@ -112,7 +113,7 @@ class ScheduleRepos(ScheduleStore):
                 used_id.append(sc_db.id)
         return result
 
-    async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
+    async def get_by_teacher_id(self, teacher_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
             # query = select(ScheduleTeacherDB).options(
@@ -149,7 +150,11 @@ class ScheduleRepos(ScheduleStore):
             teacher_schedule_ids_list += [i for i in query_result.scalars()]
 
             query = select(ScheduleDB.id).where(
-                ScheduleDB.date_.between(start_date, end_date)
+                and_(
+                    ScheduleDB.date_.between(start_date, end_date),
+                    ScheduleDB.schedule_list_id == schedule_list_id
+                )
+
             )
             query_result = await session.execute(query)
             all_schedule_ids: Set[int] = set(query_result.scalars())

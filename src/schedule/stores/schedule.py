@@ -19,11 +19,11 @@ class ScheduleStore(ABC):
         pass
 
     @abstractmethod
-    async def get_by_teacher_id_and_date(self, teacher_id: int, start_date: str, end_date: str) -> List[Schedule]:
+    async def get_by_teacher_id(self, teacher_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
         pass
 
     @abstractmethod
-    async def get_by_group_id_and_date(self, group_id: int, start_date: str, end_date: str) -> List[Schedule]:
+    async def get_by_group_id(self, group_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
         pass
 
     @abstractmethod

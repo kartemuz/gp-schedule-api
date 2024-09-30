@@ -6,5 +6,5 @@ dev:
 	poetry run fastapi dev --port 8000 src/main.py
 test:
 	poetry run pytest tests
-ssl_start:
+start_ssl:
 	poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --ssl-keyfile=./certs/key.pem --ssl-certfile=./certs/cert.pem

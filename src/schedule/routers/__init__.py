@@ -64,16 +64,19 @@ async def get_schedule(
 
     start_of_week = datetime.strptime(start_of_week, DATE_FORMAT)
     end_of_week = (start_of_week + timedelta(days=6))
+    if not schedule_list_id:
+        schedule_list_id = await schedule_service.schedule_list_store.get_active()
 
     if id:
         result: Schedule = await schedule_service.schedule_store.get(id)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     elif group_id:
-        schedules: List[Schedule] = await schedule_service.schedule_store.get_by_group_id_and_date(
+        schedules: List[Schedule] = await schedule_service.schedule_store.get_by_group_id(
             group_id=group_id,
             start_date=start_of_week,
-            end_date=end_of_week
+            end_date=end_of_week,
+            schedule_list_id=schedule_list_id
         )
         result: List[Schedule] = []
         for s in schedules:
@@ -81,12 +84,13 @@ async def get_schedule(
                 result.append(s)
 
     elif teacher_id:
-        result: List[Schedule] = await schedule_service.schedule_store.get_by_teacher_id_and_date(
+        result: List[Schedule] = await schedule_service.schedule_store.get_by_teacher_id(
             teacher_id=teacher_id,
             start_date=start_of_week,
-            end_date=end_of_week
+            end_date=end_of_week,
+            schedule_list_id=schedule_list_id
         )
-    elif flow_id and schedule_list_id:
+    elif flow_id:
         schedules: List[Schedule] = await schedule_service.schedule_store.get_all()
         result: List[Schedule] = []
         for s in schedules:
