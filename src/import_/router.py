@@ -10,6 +10,15 @@ import_router = APIRouter(
 )
 
 
+@import_router.post('/discipline')
+async def import_discipline(file: UploadFile = File(...),
+                            auth_user: User = Depends(get_auth_active_user)
+                            ) -> None:
+    path = await FileUtils.save_file(file)
+    await import_service.import_discipline(path)
+    FileUtils.remove_file(path)
+
+
 @import_router.post('/teacher')
 async def import_teacher(
     file: UploadFile = File(...),
