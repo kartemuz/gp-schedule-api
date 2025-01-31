@@ -6,6 +6,7 @@ from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList
 from src.schemas import IdSchema
 from src.schedule.service import schedule_service
 from src.constants import ScheduleConstants
+from src.schedule.exc import GroupBusyException, TeacherBusyException, RoomBusyException
 from datetime import timedelta, datetime
 
 from .group import group_router
@@ -115,7 +116,13 @@ async def add_schedule(
     schedule: ScheduleInput,
     auth_user: User = Depends(get_auth_active_user)
 ) -> IdSchema:
-    return await schedule_service.schedule_store.add(schedule)
+    try:
+        return await schedule_service.schedule_store.add(schedule)
+    except (RoomBusyException, TeacherBusyException, GroupBusyException) as ex:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ex
+        )
 
 
 @schedule_router.post('/edit')

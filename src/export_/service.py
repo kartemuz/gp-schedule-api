@@ -162,6 +162,47 @@ class ExportService:
         wb.close()
 
         return path
+    
+
+    async def export_schedule_for_all_flows(
+            self,
+            schedule_list_id,
+            dir_path: Path
+    ):
+        path: Path = dir_path / \
+            f'export_schedule.{ExportConstants.FILE_EXTENSION}'
+        flows = await schedule_service.flow_store.get_all()
+        wb = Workbook()
+        ws = wb.active
+        for f in flows:
+            ws.title = f'Поток {f.name}'
+
+            schedules = await schedule_service.schedule_store.get_by_flow_id(flow_id=f.id, schedule_list_id=schedule_list_id)
+
+            for s in schedules:
+                teachers = ''
+                for s_t in s.schedule_teachers:
+                    if s_t.change:
+                        t = s_t.change.teacher.full_name
+                    else:
+                        t = s_t.teacher.full_name
+                    teachers += f'{t.surname} {t.name} {t.patronymic}; '
+                ws.append(
+                    [
+                        s.date_,
+                        s.time_start,
+                        s.time_end,
+                        s.discipline.name,
+                        teachers,
+                        s.room.name,
+                        s.type_lesson.name
+                    ]
+                )
+            ws = wb.create_sheet()
+        wb.save(path)
+        wb.close()
+
+        return path
 
 
 export_service = ExportService()

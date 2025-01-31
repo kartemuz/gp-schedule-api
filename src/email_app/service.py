@@ -16,7 +16,7 @@ class EmailService:
         msg['From'] = settings.email.login
         msg['To'] = email_
 
-        s = smtplib.SMTP_SSL(host=host, port=465, timeout=10)
+        s = smtplib.SMTP_SSL(host=settings.email.smpt_host, port=settings.email.smtp_port, timeout=10)
 
         # s.starttls()
         s.login(settings.email.login, settings.email.password)

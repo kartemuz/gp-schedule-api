@@ -10,6 +10,8 @@ TEST_ENV_PATH: Path = BASE_DIR / '.test.env'
 class EmailSettings(BaseModel):
     login: str
     password: str
+    smpt_host: str
+    smtp_port: int
 
 
 class DatabaseSettings(BaseModel):

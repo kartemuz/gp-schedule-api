@@ -71,3 +71,16 @@ async def export_schedule(group_id: int, schedule_list_id: int, auth_user: User 
         filename=path.name,
         media_type=ExportConstants.MEDIA_TYPE
     )
+
+
+@export_router.get('/schedule_for_all_flows')
+async def export_schedule_for_all_flows(
+    schedule_list_id: int,
+    auth_user: User = Depends(get_auth_active_user)) -> FileResponse:
+    await FileUtils.create_dir(settings.static.dir_path)
+    path: Path = await export_service.export_schedule_for_all_flows(schedule_list_id=schedule_list_id, dir_path=settings.static.dir_path)
+    return FileResponse(
+        path=path,
+        filename=path.name,
+        media_type=ExportConstants.MEDIA_TYPE
+    )

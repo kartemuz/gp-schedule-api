@@ -45,3 +45,7 @@ class ScheduleStore(ABC):
     @abstractmethod
     async def edit(self, obj: Schedule) -> None:
         pass
+
+    @abstractmethod
+    async def get_by_flow_id(self, flow_id, schedule_list_id) -> list[Schedule]:
+        pass
