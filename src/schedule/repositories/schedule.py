@@ -107,11 +107,13 @@ class ScheduleRepos(ScheduleStore):
             schedules_db = query_result.scalars()
             used_id = []
             for sc_db in schedules_db:
+                print(f'############## SC_ID={sc_db.id}')
                 if sc_db.id not in used_id:
+                    print('True')
                     result.append(
                         await self.get(sc_db.id)
                     )
-                used_id.append(sc_db.id)
+                    used_id.append(sc_db.id)
         return result
 
     async def get_by_teacher_id(self, teacher_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
@@ -310,7 +312,25 @@ class ScheduleRepos(ScheduleStore):
             return result
 
     async def delete(self, id: int) -> None:
-        await DBUtils.delete_by_id(ScheduleDB, id)
+        from sqlalchemy import delete
+        from src.database import session_factory
+        from src.schedule.models import ScheduleTeacherDB
+        async with session_factory() as session:
+            stmt = (
+                delete(ScheduleTeacherDB)
+                .filter(ScheduleTeacherDB.schedule_id == id)
+            )
+            await session.execute(stmt)
+
+            stmt = (
+                delete(ScheduleDB)
+                .filter(ScheduleDB.id == id)
+            )
+            await session.execute(stmt)
+
+            await session.commit()
+
+        await DBUtils.delete_by_id(ScheduleDB, id)        
 
     async def edit(self, obj: Schedule) -> None:
         obj_db = ScheduleDB(

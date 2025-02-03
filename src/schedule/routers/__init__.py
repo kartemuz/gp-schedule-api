@@ -79,10 +79,13 @@ async def get_schedule(
             end_date=end_of_week,
             schedule_list_id=schedule_list_id
         )
+        return schedules
+    
         result: List[Schedule] = []
         for s in schedules:
             if group_id in [g.id for g in s.flow.groups]:
                 result.append(s)
+        return result
 
     elif teacher_id:
         result: List[Schedule] = await schedule_service.schedule_store.get_by_teacher_id(
