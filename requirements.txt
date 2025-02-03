@@ -1,0 +1,16 @@
+fastapi==0.111.1
+pydantic-settings==2.3.4
+sqlalchemy[asyncio]==2.0.31
+pytest==8.3.2
+email-validator==2.2.0
+aiomysql==0.2.0
+pytest-dotenv==0.5.2
+pydantic==2.8.2
+alembic==1.13.2
+pytest-async-sqlalchemy==0.2.0
+pytest-asyncio==0.23.8
+uvicorn[standard]==0.30.5
+pyjwt[crypto]==2.9.0
+bcrypt==4.2.0
+python-multipart==0.0.9
+openpyxl==3.1.5
