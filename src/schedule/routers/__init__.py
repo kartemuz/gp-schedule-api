@@ -124,7 +124,7 @@ async def add_schedule(
     except (RoomBusyException, TeacherBusyException, GroupBusyException) as ex:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=ex
+            detail=str(ex)
         )
 
 
