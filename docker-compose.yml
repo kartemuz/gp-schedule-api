@@ -19,3 +19,4 @@ services:
       context: .
     networks:
       - dev
+    container_name: gp-schedule-api-backend
