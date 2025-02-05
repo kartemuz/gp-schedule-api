@@ -51,10 +51,10 @@ app.add_middleware(
 # context.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000, ssl_context=context)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run('main:app', host="0.0.0.0", port=443, ssl_certfile='cert.pem', ssl_keyfile='key.pem')
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run('main:app', reload=True, host='127.0.0.1', port=8000)
+    uvicorn.run('main:app', reload=True, host='0.0.0.0', port=8000)

@@ -66,7 +66,7 @@ async def get_schedule(
     start_of_week = datetime.strptime(start_of_week, DATE_FORMAT)
     end_of_week = (start_of_week + timedelta(days=6))
     if not schedule_list_id:
-        schedule_list_id = await schedule_service.schedule_list_store.get_active()
+        schedule_list_id = (await schedule_service.schedule_list_store.get_active()).id
 
     if id:
         result: Schedule = await schedule_service.schedule_store.get(id)
