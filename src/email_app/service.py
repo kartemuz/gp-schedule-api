@@ -1,29 +1,41 @@
 from pydantic import EmailStr
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
 from src.config import settings
+from src.email_app.exc import EmailException
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from ssl import create_default_context
 
 
 class EmailService:
     def send_email(self, email_: EmailStr, subject: str, message: str) -> None:
         # host = 'smtp.' + \
         #     settings.email.login[settings.email.login.index('@') + 1:]
-        host = 'smtp.gmail.com'
 
-        msg = MIMEText(f'{message}', 'plain', 'utf-8')
-        msg['Subject'] = Header(subject, 'utf-8')
-        msg['From'] = settings.email.login
-        msg['To'] = email_
+        # Создаем сообщение
+        msg = MIMEMultipart()
+        msg["From"] = settings.email.login
+        msg["To"] = email_
+        msg["Subject"] = subject
 
-        s = smtplib.SMTP_SSL(host=settings.email.smpt_host, port=settings.email.smtp_port, timeout=10)
+        # Добавляем тело письма
+        msg.attach(MIMEText(message, "plain"))
 
-        # s.starttls()
-        s.login(settings.email.login, settings.email.password)
-        s.auth_plain()
+        # Создаем SSL контекст для безопасного соединения
+        context = create_default_context()
 
-        s.sendmail(msg['From'], settings.email.login, msg.as_string())
-        s.quit()
+        try:
+            # Подключаемся к SMTP серверу с шифрованием
+            with smtplib.SMTP_SSL(
+                settings.email.smpt_host, settings.email.smtp_port, context=context
+            ) as server:
+                server.login(settings.email.login, settings.email.password)
+                server.sendmail(settings.email.login, email_, msg.as_string())
+        except Exception as e:
+            raise EmailException(f"Ошибка при отправке письма на почту {email_}: {e}")
 
 
 email_service = EmailService()
