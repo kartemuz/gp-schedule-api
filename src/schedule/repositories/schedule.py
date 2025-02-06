@@ -108,28 +108,23 @@ class ScheduleRepos(ScheduleStore):
         result: List[Schedule] = []
         async with session_factory() as session:
             query = (
-                select(ScheduleDB)
-                .options(
-                    selectinload(ScheduleDB.flow).selectinload(FlowDB.flows_groups)
-                )
-                .where(
-                    and_(
-                        FlowGroupDB.group_id == group_id,
-                        ScheduleDB.date_.between(start_date, end_date),
-                        ScheduleDB.schedule_list_id == schedule_list_id,
-                    )
+                select(ScheduleDB.id)
+                .join(FlowDB, FlowDB.id == ScheduleDB.flow_id)
+                .join(FlowGroupDB, FlowGroupDB.flow_id == FlowDB.id)
+                .filter(
+                    FlowGroupDB.group_id == group_id,
+                    ScheduleDB.date_.between(start_date, end_date),
+                    ScheduleDB.schedule_list_id == schedule_list_id,
                 )
                 .order_by(ScheduleDB.date_, ScheduleDB.time_start, ScheduleDB.time_end)
             )
             query_result = await session.execute(query)
-            schedules_db = query_result.scalars()
+            schedules_ids_db = query_result.scalars()
             used_id = []
-            for sc_db in schedules_db:
-                print(f"############## SC_ID={sc_db.id}")
-                if sc_db.id not in used_id:
-                    print("True")
-                    result.append(await self.get(sc_db.id))
-                    used_id.append(sc_db.id)
+            for id in schedules_ids_db:
+                if id not in used_id:
+                    result.append(await self.get(id))
+                    used_id.append(id)
         return result
 
     async def get_by_teacher_id(
