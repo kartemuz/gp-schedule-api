@@ -1,8 +1,22 @@
 from typing import Optional, List, Set
-from src.schedule.schemas import Schedule, ScheduleInput, ScheduleList, ScheduleTeacherInput, Flow
+from src.schedule.schemas import (
+    Schedule,
+    ScheduleInput,
+    ScheduleList,
+    ScheduleTeacherInput,
+    Flow,
+)
 from src.schemas import IdSchema
 from src.schedule.stores import ScheduleStore
-from src.schedule.models import ScheduleDB, FlowDB, ChangeDB, FlowGroupDB, ScheduleTeacherDB, TeacherDB, GroupDB
+from src.schedule.models import (
+    ScheduleDB,
+    FlowDB,
+    ChangeDB,
+    FlowGroupDB,
+    ScheduleTeacherDB,
+    TeacherDB,
+    GroupDB,
+)
 from src.utils import DBUtils
 from sqlalchemy import select, and_, or_
 from src.database import session_factory
@@ -20,11 +34,11 @@ from src.schedule.exc import GroupBusyException, RoomBusyException, TeacherBusyE
 class ScheduleRepos(ScheduleStore):
     async def get_by_change_id(self, change_id: int) -> Optional[Schedule]:
         async with session_factory() as session:
-            query = select(ScheduleTeacherDB).options(
-                selectinload(
-                    ScheduleTeacherDB.change
-                )
-            ).where(ChangeDB.id == change_id)
+            query = (
+                select(ScheduleTeacherDB)
+                .options(selectinload(ScheduleTeacherDB.change))
+                .where(ChangeDB.id == change_id)
+            )
             query_result = await session.execute(query)
             s_t_db: Optional[ScheduleTeacherDB] = query_result.scalar()
             if s_t_db:
@@ -36,16 +50,11 @@ class ScheduleRepos(ScheduleStore):
     async def get_by_schedule_list_id(self, schedule_list_id: int) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
-            query = select(ScheduleDB).where(
-                ScheduleDB.schedule_list_id == schedule_list_id
-            ).options(
-                selectinload(
-                    ScheduleDB.schedule_teachers
-                )
-            ).order_by(
-                ScheduleDB.date_,
-                ScheduleDB.time_start,
-                ScheduleDB.time_end
+            query = (
+                select(ScheduleDB)
+                .where(ScheduleDB.schedule_list_id == schedule_list_id)
+                .options(selectinload(ScheduleDB.schedule_teachers))
+                .order_by(ScheduleDB.date_, ScheduleDB.time_start, ScheduleDB.time_end)
             )
             query_result = await session.execute(query)
             schedules_db: List[ScheduleDB] = query_result.scalars()
@@ -66,13 +75,17 @@ class ScheduleRepos(ScheduleStore):
                         flow=await flow_repos.get(sc_db.flow_id),
                         discipline=await discipline_repos.get(sc_db.discipline_id),
                         room=await room_repos.get(sc_db.room_id),
-                        schedule_list=await schedule_list_repos.get(sc_db.schedule_list_id),
-                        schedule_teachers=schedule_teachers
+                        schedule_list=await schedule_list_repos.get(
+                            sc_db.schedule_list_id
+                        ),
+                        schedule_teachers=schedule_teachers,
                     )
                 )
         return result
 
-    async def get_by_time_interval(self, time_start: time, time_end: time, date_: date, schedule_list_id: int) -> List[Schedule]:
+    async def get_by_time_interval(
+        self, time_start: time, time_end: time, date_: date, schedule_list_id: int
+    ) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
             query = select(ScheduleDB.id).where(
@@ -80,43 +93,48 @@ class ScheduleRepos(ScheduleStore):
                     ScheduleDB.schedule_list_id == schedule_list_id,
                     ScheduleDB.date_ == date_,
                     ScheduleDB.time_start >= time_start,
-                    ScheduleDB.time_end <= time_end
+                    ScheduleDB.time_end <= time_end,
                 )
             )
             query_result = await session.execute(query)
             ids: List[int] = query_result.scalars()
             for id in ids:
-                result.append(
-                    await self.get(id)
-                )
+                result.append(await self.get(id))
         return result
 
-    async def get_by_group_id(self, group_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
+    async def get_by_group_id(
+        self, group_id: int, start_date: str, end_date: str, schedule_list_id: int
+    ) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
-            query = select(ScheduleDB).options(
-                selectinload(ScheduleDB.flow).selectinload(FlowDB.flows_groups)
-            ).where(
-                and_(
-                    FlowGroupDB.group_id == group_id,
-                    ScheduleDB.date_.between(start_date, end_date),
-                    ScheduleDB.schedule_list_id == schedule_list_id
+            query = (
+                select(ScheduleDB)
+                .options(
+                    selectinload(ScheduleDB.flow).selectinload(FlowDB.flows_groups)
                 )
+                .where(
+                    and_(
+                        FlowGroupDB.group_id == group_id,
+                        ScheduleDB.date_.between(start_date, end_date),
+                        ScheduleDB.schedule_list_id == schedule_list_id,
+                    )
+                )
+                .order_by(ScheduleDB.date_, ScheduleDB.time_start, ScheduleDB.time_end)
             )
             query_result = await session.execute(query)
             schedules_db = query_result.scalars()
             used_id = []
             for sc_db in schedules_db:
-                print(f'############## SC_ID={sc_db.id}')
+                print(f"############## SC_ID={sc_db.id}")
                 if sc_db.id not in used_id:
-                    print('True')
-                    result.append(
-                        await self.get(sc_db.id)
-                    )
+                    print("True")
+                    result.append(await self.get(sc_db.id))
                     used_id.append(sc_db.id)
         return result
 
-    async def get_by_teacher_id(self, teacher_id: int, start_date: str, end_date: str, schedule_list_id: int) -> List[Schedule]:
+    async def get_by_teacher_id(
+        self, teacher_id: int, start_date: str, end_date: str, schedule_list_id: int
+    ) -> List[Schedule]:
         result: List[Schedule] = []
         async with session_factory() as session:
             # query = select(ScheduleTeacherDB).options(
@@ -136,7 +154,8 @@ class ScheduleRepos(ScheduleStore):
 
             query_result = await session.execute(query)
             teacher_schedule_ids_list: List[int] = [
-                i.schedule_id for i in query_result.scalars()]
+                i.schedule_id for i in query_result.scalars()
+            ]
 
             query = select(ChangeDB.schedule_teacher_id).where(
                 ChangeDB.teacher_id == teacher_id
@@ -155,9 +174,8 @@ class ScheduleRepos(ScheduleStore):
             query = select(ScheduleDB.id).where(
                 and_(
                     ScheduleDB.date_.between(start_date, end_date),
-                    ScheduleDB.schedule_list_id == schedule_list_id
+                    ScheduleDB.schedule_list_id == schedule_list_id,
                 )
-
             )
             query_result = await session.execute(query)
             all_schedule_ids: Set[int] = set(query_result.scalars())
@@ -166,19 +184,17 @@ class ScheduleRepos(ScheduleStore):
             good_schedule_ids: Set[int] = all_schedule_ids & teacher_schedule_ids
 
             for id in good_schedule_ids:
-                result.append(
-                    await self.get(id)
-                )
+                result.append(await self.get(id))
         return result
 
     async def get(self, id: int) -> Optional[Schedule]:
         result: Optional[Schedule] = None
         async with session_factory() as session:
-            query = select(ScheduleDB).options(
-                selectinload(
-                    ScheduleDB.schedule_teachers
-                )
-            ).where(ScheduleDB.id == id)
+            query = (
+                select(ScheduleDB)
+                .options(selectinload(ScheduleDB.schedule_teachers))
+                .where(ScheduleDB.id == id)
+            )
             query_result = await session.execute(query)
             schedule_db = query_result.scalar()
             if schedule_db:
@@ -196,8 +212,10 @@ class ScheduleRepos(ScheduleStore):
                     flow=await flow_repos.get(schedule_db.flow_id),
                     discipline=await discipline_repos.get(schedule_db.discipline_id),
                     room=await room_repos.get(schedule_db.room_id),
-                    schedule_list=await schedule_list_repos.get(schedule_db.schedule_list_id),
-                    schedule_teachers=schedule_teachers
+                    schedule_list=await schedule_list_repos.get(
+                        schedule_db.schedule_list_id
+                    ),
+                    schedule_teachers=schedule_teachers,
                 )
             else:
                 result = None
@@ -207,9 +225,7 @@ class ScheduleRepos(ScheduleStore):
         result: List[Schedule] = []
         ids: List[int] = await DBUtils.select_all_id(ScheduleDB)
         for id in ids:
-            result.append(
-                await self.get(id)
-            )
+            result.append(await self.get(id))
         return result
 
     async def add(self, obj: ScheduleInput) -> IdSchema:
@@ -218,19 +234,16 @@ class ScheduleRepos(ScheduleStore):
 
         async with session_factory() as session:
 
-            query_by_room_ids = (
-            select(ScheduleDB.room_id)
-            .filter(ScheduleDB.time_end <= time_end,
-                    ScheduleDB.time_start >= time_start,
-                    ScheduleDB.schedule_list_id == obj.schedule_list.id,
-                    ScheduleDB.date_ == obj.date_
-                    )
+            query_by_room_ids = select(ScheduleDB.room_id).filter(
+                ScheduleDB.time_end <= time_end,
+                ScheduleDB.time_start >= time_start,
+                ScheduleDB.schedule_list_id == obj.schedule_list.id,
+                ScheduleDB.date_ == obj.date_,
             )
             room_ids_res = await session.execute(query_by_room_ids)
             room_ids = room_ids_res.scalars().all()
             if obj.room.id in room_ids:
-                raise RoomBusyException(f'Комната id={obj.room.id} занята')
-
+                raise RoomBusyException(f"Комната id={obj.room.id} занята")
 
             query_by_teacher_ids = (
                 select(ScheduleTeacherDB.teacher_id)
@@ -239,14 +252,14 @@ class ScheduleRepos(ScheduleStore):
                     ScheduleDB.time_end <= time_end,
                     ScheduleDB.time_start >= time_start,
                     ScheduleDB.schedule_list_id == obj.schedule_list.id,
-                    ScheduleDB.date_ == obj.date_
+                    ScheduleDB.date_ == obj.date_,
                 )
             )
             teacher_ids_res = await session.execute(query_by_teacher_ids)
             teacher_ids = teacher_ids_res.scalars().all()
             for t in obj.schedule_teachers:
                 if t.teacher.id in teacher_ids:
-                    raise TeacherBusyException('Учитель id={t.teacher.id} занят')
+                    raise TeacherBusyException("Учитель id={t.teacher.id} занят")
 
             query_by_group_ids = (
                 select(FlowGroupDB.group_id)
@@ -257,23 +270,19 @@ class ScheduleRepos(ScheduleStore):
                     ScheduleDB.time_end <= time_end,
                     ScheduleDB.time_start >= time_start,
                     ScheduleDB.schedule_list_id == obj.schedule_list.id,
-                    ScheduleDB.date_ == obj.date_
+                    ScheduleDB.date_ == obj.date_,
                 )
             )
             group_ids_res = await session.execute(query_by_group_ids)
             group_ids = set(group_ids_res.scalars().all())
 
-            query_groups_by_flow = (
-                select(FlowGroupDB.group_id)
-                .filter(FlowGroupDB.flow_id == obj.flow.id)
+            query_groups_by_flow = select(FlowGroupDB.group_id).filter(
+                FlowGroupDB.flow_id == obj.flow.id
             )
             groups_by_flow_res = await session.execute(query_groups_by_flow)
             groups_by_flow = set(groups_by_flow_res.scalars().all())
             if len(groups_by_flow - group_ids) != len(groups_by_flow):
-                raise GroupBusyException('Пересечение рассписания для групп в потоке')
-
-
-
+                raise GroupBusyException("Пересечение рассписания для групп в потоке")
 
         obj_db = ScheduleDB(
             id=obj.id,
@@ -284,14 +293,12 @@ class ScheduleRepos(ScheduleStore):
             type_lesson_id=obj.type_lesson.id,
             flow_id=obj.flow.id,
             discipline_id=obj.discipline.id,
-            room_id=obj.room.id
+            room_id=obj.room.id,
         )
         await DBUtils.insert_new(obj_db)
 
         async with session_factory() as session:
-            query = select(
-                ScheduleDB.id
-            ).where(
+            query = select(ScheduleDB.id).where(
                 and_(
                     ScheduleDB.schedule_list_id == obj.schedule_list.id,
                     ScheduleDB.date_ == obj.date_,
@@ -300,13 +307,11 @@ class ScheduleRepos(ScheduleStore):
                     ScheduleDB.type_lesson_id == obj.type_lesson.id,
                     ScheduleDB.flow_id == obj.flow.id,
                     ScheduleDB.discipline_id == obj.discipline.id,
-                    ScheduleDB.room_id == obj.room.id
+                    ScheduleDB.room_id == obj.room.id,
                 )
             )
             query_result = await session.execute(query)
-            result = IdSchema(
-                id=query_result.scalar()
-            )
+            result = IdSchema(id=query_result.scalar())
             for s_t in obj.schedule_teachers:
                 await schedule_teacher_repos.add(s_t, schedule_id=result.id)
             return result
@@ -315,22 +320,17 @@ class ScheduleRepos(ScheduleStore):
         from sqlalchemy import delete
         from src.database import session_factory
         from src.schedule.models import ScheduleTeacherDB
+
         async with session_factory() as session:
-            stmt = (
-                delete(ScheduleTeacherDB)
-                .filter(ScheduleTeacherDB.schedule_id == id)
-            )
+            stmt = delete(ScheduleTeacherDB).filter(ScheduleTeacherDB.schedule_id == id)
             await session.execute(stmt)
 
-            stmt = (
-                delete(ScheduleDB)
-                .filter(ScheduleDB.id == id)
-            )
+            stmt = delete(ScheduleDB).filter(ScheduleDB.id == id)
             await session.execute(stmt)
 
             await session.commit()
 
-        await DBUtils.delete_by_id(ScheduleDB, id)        
+        await DBUtils.delete_by_id(ScheduleDB, id)
 
     async def edit(self, obj: Schedule) -> None:
         obj_db = ScheduleDB(
@@ -342,44 +342,36 @@ class ScheduleRepos(ScheduleStore):
             type_lesson_id=obj.type_lesson.id,
             flow_id=obj.flow.id,
             discipline_id=obj.discipline.id,
-            room_id=obj.room.id
+            room_id=obj.room.id,
         )
         data = obj_db.__dict__.copy()
-        data.pop('_sa_instance_state')
+        data.pop("_sa_instance_state")
         await DBUtils.update_by_id(model=ScheduleDB, **data)
 
         for s_t in obj.schedule_teachers:
             await schedule_teacher_repos.edit(
                 obj=ScheduleTeacherInput(
                     id=s_t.id,
-                    teacher=IdSchema(
-                        s_t.change.teacher.id
-                    ),
-                    change=IdSchema(
-                        s_t.change.id
-                    )
+                    teacher=IdSchema(s_t.change.teacher.id),
+                    change=IdSchema(s_t.change.id),
                 ),
-                schedule_id=obj.id
+                schedule_id=obj.id,
             )
 
     async def get_by_flow_id(self, flow_id, schedule_list_id) -> list[Schedule]:
         async with session_factory() as session:
             result: list[Schedule] = []
-            query = (
-                select(ScheduleDB.id)
-                .filter(ScheduleDB.flow_id == flow_id,
-                        ScheduleDB.schedule_list_id == schedule_list_id)
+            query = select(ScheduleDB.id).filter(
+                ScheduleDB.flow_id == flow_id,
+                ScheduleDB.schedule_list_id == schedule_list_id,
             )
             res = await session.execute(query)
             schedule_ids = res.scalars().all()
 
             for id in schedule_ids:
-                result.append(
-                    await self.get(id)
-                )
+                result.append(await self.get(id))
 
             return result
-
 
 
 schedule_repos = ScheduleRepos()
